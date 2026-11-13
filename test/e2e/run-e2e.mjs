@@ -695,7 +695,11 @@ console.log('\n[10] accessibility: names, dialogs, focus, live regions, chart al
     check('modal dialogs make the rest of the page inert (focus cannot land on background controls)', modal);
 
     // live regions: quiet during a steady healthy recording
-    await st(page, async () => { const { controller, service } = window.__sensorlab; await controller.start({ name: 'a11y', include: service.list().map(e => e.handle), keepAwake: false }); });
+    const a11ySessionId = await st(page, async () => {
+        const { controller, service } = window.__sensorlab;
+        await controller.start({ name: 'a11y', include: service.list().map(e => e.handle), keepAwake: false });
+        return service.sessionId;
+    });
     await waitFor(() => st(page, () => window.__sensorlab.controller.state === 'RECORDING'), 10000);
     await sleep(1500);
     const quiet = await st(page, async () => {
@@ -721,18 +725,31 @@ console.log('\n[10] accessibility: names, dialogs, focus, live regions, chart al
     await page.click('#recordBtn');
     const fin = await waitFor(() => st(page, () => /finalized/i.test(document.getElementById('srAnnounce').textContent) ? document.getElementById('srAnnounce').textContent : null), 10000);
     check('finalization result announced with the saved-reading count', !!fin && /\d+ readings saved/.test(fin), fin);
+    const finalizedA11ySession = await st(page, async (id) => {
+        const sessions = await window.__sensorlab.repo.listSessions();
+        const session = sessions.find(s => s.sessionId === id);
+        return session ? { name: session.name, state: session.state } : null;
+    }, a11ySessionId);
+    check('accessibility test session is finalized in storage before History opens', finalizedA11ySession?.name === 'a11y' && finalizedA11ySession.state === 'closed', JSON.stringify(finalizedA11ySession));
 
     // chart text alternatives
     const alt = await st(page, () => [...document.querySelectorAll('canvas')].map(c => ({ id: c.id, ok: (c.getAttribute('aria-describedby') || '').split(' ').filter(Boolean).every(i => document.getElementById(i)) && !!c.getAttribute('aria-describedby') })));
     check('charts reference a textual/numerical alternative (aria-describedby targets exist)', alt.every(a => a.ok), JSON.stringify(alt));
     await page.click('#historyBtn');
-    await page.waitForSelector('#histBody tr');
+    const a11yRowFound = await waitFor(() => st(page, () => [...document.querySelectorAll('#histBody tr')].some(tr => tr.textContent.includes('a11y'))), 5000);
+    check('History eventually lists the accessibility test session', !!a11yRowFound, `session=${a11ySessionId}`);
     const names = nameIssues(await ax());
     check('History: View/Delete buttons have session-specific accessible names', names.duplicates.length === 0 && names.unnamed.length === 0, JSON.stringify(names));
-    await st(page, () => [...document.querySelectorAll('#histBody tr')].find(tr => tr.textContent.includes('a11y')).querySelector('button[aria-label^="View"]').click());
-    await waitFor(() => st(page, () => document.querySelectorAll('#detailSeriesBody tr').length), 5000);
-    const series = await st(page, () => [...document.querySelectorAll('#detailSeriesBody tr')].map(tr => tr.textContent));
-    check('History: per-series numerical summary table (chart alternative) lists every series', series.length === 4, series.join(' | ').slice(0, 120));
+    const openedA11ySession = a11yRowFound && await st(page, () => {
+        const row = [...document.querySelectorAll('#histBody tr')].find(tr => tr.textContent.includes('a11y'));
+        const view = row?.querySelector('button[aria-label^="View session"]');
+        if (!view) return false;
+        view.click();
+        return true;
+    });
+    const detailReady = openedA11ySession && await waitFor(() => st(page, () => document.querySelectorAll('#detailSeriesBody tr').length > 0), 5000);
+    const series = detailReady ? await st(page, () => [...document.querySelectorAll('#detailSeriesBody tr')].map(tr => tr.textContent)) : [];
+    check('History: per-series numerical summary table (chart alternative) lists every series', !!detailReady && series.length === 4, series.join(' | ').slice(0, 120) || 'accessibility test session detail did not open');
     await page.keyboard.press('Escape');
 
     // WCAG AA text contrast, both themes
