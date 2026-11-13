@@ -1,0 +1,7 @@
+# 2026-10-13T23:33:00.243Z $ npm run build
+
+> sensorlab@2.0.0-dev build
+> node scripts/build.mjs
+
+built dist/ (2.0.0-dev+1e91019c7e6b)
+exit=0

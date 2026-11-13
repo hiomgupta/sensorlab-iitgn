@@ -1,0 +1,128 @@
+[
+  {
+    "name": "01-npm-ci",
+    "cmd": "npm ci",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 2
+  },
+  {
+    "name": "02-lint",
+    "cmd": "npm run lint",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 4
+  },
+  {
+    "name": "03-unit",
+    "cmd": "npm test",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 4
+  },
+  {
+    "name": "04-firmware",
+    "cmd": "npm run test:firmware",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 2
+  },
+  {
+    "name": "14-firmware-compile",
+    "cmd": "npm run firmware:compile",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 10
+  },
+  {
+    "name": "05-build",
+    "cmd": "npm run build",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 0
+  },
+  {
+    "name": "06-audit-offline",
+    "cmd": "npm run audit:offline",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 0
+  },
+  {
+    "name": "07-e2e",
+    "cmd": "npm run test:e2e",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 78
+  },
+  {
+    "name": "08-e2e-repeat",
+    "cmd": "npm run test:e2e",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 77
+  },
+  {
+    "name": "09-package",
+    "cmd": "npm run package",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 1
+  },
+  {
+    "name": "17-package-smoke",
+    "cmd": "npm run test:package",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 12
+  },
+  {
+    "name": "20-audit-offline-package",
+    "cmd": "npm run audit:offline -- --package",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 1
+  },
+  {
+    "name": "21-audit-offline-selftest",
+    "cmd": "npm run audit:offline -- --self-test",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 1
+  },
+  {
+    "name": "16-bench-pipeline",
+    "cmd": "node test/e2e/bench-pipeline.mjs 30",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 154
+  },
+  {
+    "name": "19-large-session",
+    "cmd": "node test/e2e/bench-large-session.mjs 1000000 --package",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 13
+  },
+  {
+    "name": "10-coverage",
+    "cmd": "node --test --experimental-test-coverage \"--test-coverage-include=src/**\" \"test/unit/**/*.test.js\"",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 4
+  },
+  {
+    "name": "18-audit-repo",
+    "cmd": "npm run audit:repo",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 1
+  },
+  {
+    "name": "13-traceability",
+    "cmd": "npm run verify:trace",
+    "status": "PASS",
+    "exit": 0,
+    "seconds": 0
+  }
+]

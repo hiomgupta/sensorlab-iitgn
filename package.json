@@ -1,0 +1,32 @@
+{
+  "name": "sensorlab",
+  "version": "2.0.0-dev",
+  "private": true,
+  "description": "Offline-first, Bluetooth-only laboratory sensor acquisition (Web Bluetooth).",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --test \"test/unit/**/*.test.js\"",
+    "test:firmware": "node test/firmware/run-c-tests.mjs",
+    "test:e2e": "node test/e2e/run-e2e.mjs",
+    "lint": "node scripts/lint.mjs",
+    "audit:offline": "node scripts/audit-offline.mjs",
+    "vendor": "node scripts/vendor.mjs",
+    "serve": "node tools/serve.mjs dist 8080",
+    "package": "node scripts/package.mjs",
+    "check": "npm run lint && npm test && npm run test:firmware && npm run build && npm run audit:offline && npm run test:e2e && npm run verify:trace",
+    "verify:trace": "node scripts/verify-traceability.mjs",
+    "firmware:compile": "node test/firmware/compile-sketch.mjs",
+    "audit:repo": "node scripts/audit-repo.mjs",
+    "test:package": "node test/e2e/smoke-package.mjs"
+  },
+  "devDependencies": {
+    "chart.js": "4.4.7",
+    "esbuild": "0.28.2",
+    "fake-indexeddb": "6.2.5",
+    "puppeteer-core": "25.13.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

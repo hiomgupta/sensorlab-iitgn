@@ -1,0 +1,19 @@
+# 2026-10-13T23:38:41.786Z verify-all → docs\evidence
+PASS                         01-npm-ci                  exit=0 2s  npm ci
+PASS                         02-lint                    exit=0 4s  npm run lint
+PASS                         03-unit                    exit=0 4s  npm test
+PASS                         04-firmware                exit=0 2s  npm run test:firmware
+PASS                         14-firmware-compile        exit=0 10s  npm run firmware:compile
+PASS                         05-build                   exit=0 0s  npm run build
+PASS                         06-audit-offline           exit=0 0s  npm run audit:offline
+PASS                         07-e2e                     exit=0 78s  npm run test:e2e
+PASS                         08-e2e-repeat              exit=0 77s  npm run test:e2e
+PASS                         09-package                 exit=0 1s  npm run package
+PASS                         17-package-smoke           exit=0 12s  npm run test:package
+PASS                         20-audit-offline-package   exit=0 1s  npm run audit:offline -- --package
+PASS                         21-audit-offline-selftest  exit=0 1s  npm run audit:offline -- --self-test
+PASS                         16-bench-pipeline          exit=0 154s  node test/e2e/bench-pipeline.mjs 30
+PASS                         19-large-session           exit=0 13s  node test/e2e/bench-large-session.mjs 1000000 --package
+PASS                         10-coverage                exit=0 4s  node --test --experimental-test-coverage "--test-coverage-include=src/**" "test/unit/**/*.test.js"
+PASS                         18-audit-repo              exit=0 1s  npm run audit:repo
+PASS                         13-traceability            exit=0 0s  npm run verify:trace

@@ -1,0 +1,7 @@
+# 2026-10-13T23:32:40.515Z $ npm run lint
+
+> sensorlab@2.0.0-dev lint
+> node scripts/lint.mjs
+
+lint: OK (63 JS files syntax-checked; security/offline rules clean)
+exit=0

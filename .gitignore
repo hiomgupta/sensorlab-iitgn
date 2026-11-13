@@ -1,0 +1,33 @@
+node_modules/
+dist/
+build/
+release/
+firmware/test/vectors.h
+test/e2e/results.json
+*.log
+.env
+.env.*
+*.pem
+*.key
+# local sensor data exports must not be committed
+*.csv
+!test/fixtures/*.csv
+.DS_Store
+Thumbs.db
+test/e2e/bench-results.json
+
+# Local editor and assistant settings
+.vscode/
+.claude/
+
+# Local session exports and generated reports
+/trial*.json
+/sensorlab report.pdf
+/PROJECT_AUDIT_DOSSIER.md
+/SENSORLAB_COMPLETE_TECHNICAL_CONTEXT.md
+/SENSORLAB_POSTER_BRIEF.md
+
+# Archived/generated verification evidence
+/docs/evidence/archive/
+/docs/evidence/baseline-*/
+/docs/evidence/readiness/

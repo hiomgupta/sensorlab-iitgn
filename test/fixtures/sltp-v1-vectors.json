@@ -1,0 +1,38 @@
+{
+  "description": "SLTP v1 byte-level vectors, hand-computed from docs/PROTOCOL.md. Consumed by test/unit/sltp.test.js and firmware/test/test_sltp.c.",
+  "data": [
+    {
+      "name": "two_channels_basic",
+      "sequence": 1, "deviceTimeUs": 1000000, "flags": 0,
+      "values": [100, -5], "valid": [true, true],
+      "hex": "01020100000040420f00000364000000fbffffff"
+    },
+    {
+      "name": "one_channel_wrap_boot_overrun_invalid_int32min",
+      "sequence": 4294967295, "deviceTimeUs": 4294967295, "flags": 3,
+      "values": [-2147483648], "valid": [false],
+      "hex": "0101ffffffffffffffff030000000080"
+    },
+    {
+      "name": "eight_channels_max",
+      "sequence": 305419896, "deviceTimeUs": 2596069104, "flags": 4,
+      "values": [0, 1, 2, 3, 4, 5, 6, 7], "valid": [true, false, true, false, false, true, false, true],
+      "hex": "010878563412f0debc9a04a50000000001000000020000000300000004000000050000000600000007000000"
+    }
+  ],
+  "control": [
+    { "name": "start", "opcode": 1, "hex": "0101" },
+    { "name": "stop", "opcode": 2, "hex": "0102" },
+    { "name": "set_period_100ms", "opcode": 3, "arg": 100000, "hex": "0103a0860100" }
+  ],
+  "invalid_data": [
+    { "name": "too_short", "hex": "0101000000000000000000010000", "code": "TOO_SHORT" },
+    { "name": "bad_version", "hex": "02020100000040420f00000364000000fbffffff", "code": "UNSUPPORTED_VERSION" },
+    { "name": "zero_channels", "hex": "01000100000040420f0000036400000000000000", "code": "BAD_CHANNEL_COUNT" },
+    { "name": "nine_channels", "hex": "01090100000040420f00000364000000fbffffff", "code": "BAD_CHANNEL_COUNT" },
+    { "name": "truncated_by_mtu", "hex": "01030100000040420f00000764000000fbffffff", "code": "LENGTH_MISMATCH" },
+    { "name": "trailing_byte", "hex": "01020100000040420f00000364000000fbffffff00", "code": "LENGTH_MISMATCH" },
+    { "name": "reserved_flag", "hex": "01020100000040420f00080364000000fbffffff", "code": "RESERVED_FLAGS" },
+    { "name": "valid_mask_beyond_n", "hex": "01020100000040420f00000764000000fbffffff", "code": "BAD_VALID_MASK" }
+  ]
+}

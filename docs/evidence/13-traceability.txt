@@ -1,0 +1,72 @@
+# 2026-10-13T23:38:41.364Z $ npm run verify:trace
+
+> sensorlab@2.0.0-dev verify:trace
+> node scripts/verify-traceability.mjs
+
+✔ A1 PASS    6 evidence reference(s) verified
+✔ A2 PARTIAL 1 evidence reference(s) verified
+✔ A3 BLOCKED 3 evidence reference(s) verified
+✔ A4 PARTIAL 6 evidence reference(s) verified
+✔ A5 BLOCKED 3 evidence reference(s) verified
+✔ A6 BLOCKED 2 evidence reference(s) verified
+✔ A7 PARTIAL 6 evidence reference(s) verified
+✔ A8 PASS    5 evidence reference(s) verified
+✔ A9 PASS    7 evidence reference(s) verified
+✔ A10 PASS    3 evidence reference(s) verified
+✔ A11 PARTIAL 3 evidence reference(s) verified
+✔ A12 PARTIAL 2 evidence reference(s) verified
+✔ R1 PARTIAL 5 evidence reference(s) verified
+✔ R2 PASS    5 evidence reference(s) verified
+✔ R3 PASS    4 evidence reference(s) verified
+✔ R4 PASS    3 evidence reference(s) verified
+✔ R5 PASS    5 evidence reference(s) verified
+✔ R6 PASS    4 evidence reference(s) verified
+✔ R7 PASS    4 evidence reference(s) verified
+✔ R8 PASS    6 evidence reference(s) verified
+✔ R9 PASS    2 evidence reference(s) verified
+✔ R10 PASS    2 evidence reference(s) verified
+✔ R11 PASS    3 evidence reference(s) verified
+✔ R12 PASS    2 evidence reference(s) verified
+✔ R13 PARTIAL 3 evidence reference(s) verified
+✔ R14 PARTIAL 3 evidence reference(s) verified
+✔ R15 BLOCKED 2 evidence reference(s) verified
+✔ L1 PASS    3 evidence reference(s) verified
+✔ L2 PASS    3 evidence reference(s) verified
+✔ L3 PASS    2 evidence reference(s) verified
+✔ L4 PASS    3 evidence reference(s) verified
+✔ L5 PASS    3 evidence reference(s) verified
+✔ L6 PASS    5 evidence reference(s) verified
+✔ L7 PARTIAL 5 evidence reference(s) verified
+✔ L8 PASS    2 evidence reference(s) verified
+✔ L9 PASS    7 evidence reference(s) verified
+✔ L10 PARTIAL 1 evidence reference(s) verified
+✔ L11 PARTIAL 3 evidence reference(s) verified
+✔ L12 PASS    3 evidence reference(s) verified
+✔ L13 PASS    4 evidence reference(s) verified
+✔ L14 PARTIAL 3 evidence reference(s) verified
+✔ P1 PARTIAL 2 evidence reference(s) verified
+✔ P2 BLOCKED 0 evidence reference(s) verified
+✔ P3 FAIL    0 evidence reference(s) verified
+✔ P4 BLOCKED 0 evidence reference(s) verified
+✔ F1 PASS    1 evidence reference(s) verified
+✔ F2 BLOCKED 0 evidence reference(s) verified
+✔ V1 PASS    3 evidence reference(s) verified
+✔ V2 PASS    3 evidence reference(s) verified
+✔ V3 PASS    5 evidence reference(s) verified
+✔ V4 PASS    4 evidence reference(s) verified
+✔ V5 PARTIAL 4 evidence reference(s) verified
+✔ V6 PARTIAL 2 evidence reference(s) verified
+✔ V7 PARTIAL 2 evidence reference(s) verified
+✔ F1 PARTIAL 7 evidence reference(s) verified
+✔ F2 PARTIAL 3 evidence reference(s) verified
+✔ F3 PASS    8 evidence reference(s) verified
+✔ F4 PASS    1 evidence reference(s) verified
+✔ F5 PASS    2 evidence reference(s) verified
+✔ F6 PASS    2 evidence reference(s) verified
+✔ F7 PASS    1 evidence reference(s) verified
+✔ F8 PASS    2 evidence reference(s) verified
+✔ F9 PASS    2 evidence reference(s) verified
+✔ F10 PASS    2 evidence reference(s) verified
+
+traceability: 64 requirements, 203 evidence references, 0 problem(s); statuses {"PASS":38,"PARTIAL":18,"BLOCKED":7,"FAIL":1}
+exit=0

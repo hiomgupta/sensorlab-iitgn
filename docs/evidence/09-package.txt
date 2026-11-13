@@ -1,0 +1,7 @@
+# 2026-10-13T23:35:36.568Z $ npm run package
+
+> sensorlab@2.0.0-dev package
+> node scripts/package.mjs
+
+release/sensorlab-2.0.0-dev.zip  524 KB  sha256 ffda03567ef0c1a0cf8afa1ce16128c065b48ea295e24ee47bb1651eb11876d4  (21 files)
+exit=0

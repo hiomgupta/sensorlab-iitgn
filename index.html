@@ -1,365 +1,366 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SensorLab — IIT Gandhinagar</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-    <!-- Firebase SDK (compat for simplicity — no build step needed) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#09090b">
+<!-- Offline by construction: no remote origins may be contacted. connect-src 'none' blocks fetch/XHR/WebSocket to anywhere. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>SensorLab</title>
+<link rel="icon" href="data:,">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/styles.css">
+<script src="vendor/chart.umd.min.js"></script>
+<!--SL:ENTRY--><script type="module" src="src/main.js"></script><!--/SL:ENTRY-->
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to chart</a>
 
-<!-- ── Header ── -->
 <header class="header">
-    <div class="header-brand">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    <div class="brand">
+        <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         <h1>SensorLab</h1>
+        <span class="version" id="appVersion"></span>
     </div>
-    <div class="header-actions">
-        <button id="connectBtn" class="btn btn-primary"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Connect</button>
-        <button id="historyBtn" class="btn btn-ghost">History</button>
-        <button id="helpBtn" class="btn btn-ghost">Help</button>
-        <button id="logToggleBtn" class="btn btn-ghost">Log</button>
-    </div>
-    <div class="header-meta">
-        <button id="themeToggleBtn" class="btn btn-ghost btn-sm" title="Toggle light/dark mode">
-            <svg id="themeIconSun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            <svg id="themeIconMoon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        </button>
-        <div class="auth-area" id="authArea">
-            <!-- Guest state (default) -->
-            <button id="signInBtn" class="btn btn-outline btn-sm auth-signin">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                Sign in
-            </button>
-            <!-- Signed-in state (hidden by default) -->
-            <div id="userInfo" class="user-info" style="display:none">
-                <img id="userAvatar" class="user-avatar" src="" alt="" referrerpolicy="no-referrer">
-                <span id="userName" class="user-name"></span>
-                <button id="signOutBtn" class="btn btn-ghost btn-sm">Sign out</button>
-            </div>
-        </div>
-        <div class="header-divider"></div>
-        <span id="connectionDot" class="connection-dot disconnected"></span>
-        <span class="subtitle">IIT Gandhinagar</span>
+    <nav class="header-actions" aria-label="Main">
+        <button id="addDeviceBtn" class="btn btn-primary" type="button">+ Add device</button>
+        <button id="demoBtn" class="btn" type="button">Demo</button>
+        <button id="historyBtn" class="btn" type="button">History</button>
+        <button id="installBtn" class="btn" type="button" aria-haspopup="dialog" aria-controls="installDialog">Install</button>
+        <button id="helpBtn" class="btn btn-ghost" type="button">Help</button>
+        <button id="logBtn" class="btn btn-ghost" type="button" aria-expanded="false" aria-controls="logPanel">Log</button>
+        <button id="themeBtn" class="btn btn-ghost" type="button" aria-label="Toggle light/dark theme">Theme</button>
+    </nav>
+    <div class="header-status">
+        <span class="chip" id="offlineChip" title="SensorLab makes no network requests. Data stays on this computer.">● Offline-only</span>
+        <span class="chip" id="bleChip" role="status"></span>
     </div>
 </header>
 
-<!-- ── Tab-switch warning ── -->
-<div id="tabWarning" class="tab-warning">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    Switching tabs may disconnect BLE. Keep this tab active during experiments.
+<div class="banners" aria-live="polite">
+    <div id="simBanner" class="banner banner-sim" hidden role="status"><strong>SIMULATED DATA</strong> — demo devices are connected. Their readings are generated and are not physical measurements. Sessions that include them are labelled as simulated.</div>
+    <div id="bleBanner" class="banner banner-warn" hidden role="status"></div>
+    <div id="storageBanner" class="banner banner-error" hidden role="alert"></div>
+    <div id="recoveryBanner" class="banner banner-warn" hidden role="status"><span id="recoveryText"></span> <button type="button" class="btn btn-sm" id="recoveryReview">Review</button></div>
+    <div id="visibilityBanner" class="banner banner-warn" hidden role="status"></div>
+    <div id="chartBanner" class="banner banner-warn" hidden role="status"></div>
 </div>
 
-<!-- ── First-time guide ── -->
-<div id="guideBanner" class="guide-banner">
-    <div class="guide-content">
-        <strong>Welcome to SensorLab</strong>
-        <p>Connect a BLE sensor, start recording, and export your data as CSV or JSON. Use the Help button for detailed instructions.</p>
-    </div>
-    <button class="btn btn-sm btn-primary" id="guideClose">Got it</button>
-</div>
-
-<!-- ── Main Layout ── -->
-<div class="app-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h3>Devices</h3>
-        </div>
-        <div id="devicesPanel">
-            <div class="sidebar-empty" id="sidebarEmpty">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.4"><path d="M6.5 6.5m-3.5 0a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0"/><path d="M2.05 12.05a7 7 0 0 0 9.9 9.9"/><path d="M14 14l6 6"/><path d="M14 20l6 -6"/></svg>
-                <p>No devices connected</p>
-                <small>Click <strong>Connect</strong> to start</small>
-            </div>
-        </div>
+<div class="layout">
+    <aside class="sidebar" aria-labelledby="devicesHeading">
+        <h2 id="devicesHeading" class="section-title">Devices</h2>
+        <p id="noDevices" class="muted empty">No devices. Use <strong>+ Add device</strong>, or <strong>Demo</strong> to try the app without hardware.</p>
+        <ul id="deviceList" class="device-list"></ul>
     </aside>
 
-    <!-- Main -->
-    <main class="main-content">
-        <!-- Toolbar -->
-        <div class="toolbar">
-            <div class="toolbar-left">
-                <label class="toolbar-label">Window
-                    <select id="timeWindow" class="toolbar-select">
-                        <option value="30">30 s</option>
-                        <option value="60" selected>60 s</option>
-                        <option value="120">2 min</option>
-                        <option value="300">5 min</option>
-                        <option value="600">10 min</option>
-                    </select>
-                </label>
-                <label class="toolbar-label">Chart
-                    <select id="chartType" class="toolbar-select">
-                        <option value="line">Line</option>
-                        <option value="scatter">Scatter</option>
-                    </select>
-                </label>
-                <div class="toolbar-divider"></div>
-                <button id="pauseBtn" class="btn btn-outline btn-sm">Pause</button>
-                <button id="annotateBtn" class="btn btn-outline btn-sm">Annotate</button>
-            </div>
-            <div class="toolbar-right">
-                <span id="sessionInfo" class="session-badge"></span>
-                <button id="recordBtn" class="btn btn-outline btn-sm">Record</button>
-                <div class="toolbar-divider"></div>
-                <label class="toolbar-label">Device
-                    <select id="exportDeviceSelect" class="toolbar-select">
-                        <option value="">All devices</option>
-                    </select>
-                </label>
-                <button id="exportCSV" class="btn btn-ghost btn-sm">CSV</button>
-                <button id="exportJSON" class="btn btn-ghost btn-sm">JSON</button>
-            </div>
+    <main id="main" class="main" tabindex="-1">
+        <div class="toolbar" role="toolbar" aria-label="Chart and recording">
+            <label class="tl">Window
+                <select id="windowSel">
+                    <option value="10">10 s</option><option value="30">30 s</option><option value="60" selected>60 s</option>
+                    <option value="120">2 min</option><option value="300">5 min</option><option value="600">10 min</option>
+                </select>
+            </label>
+            <button id="pauseBtn" class="btn btn-sm" type="button" aria-pressed="false">Pause chart</button>
+            <span class="spacer"></span>
+            <button id="annotateBtn" class="btn btn-sm" type="button" disabled>Annotate</button>
+            <button id="recordBtn" class="btn btn-sm btn-record" type="button">● Record</button>
+            <span id="recStatus" class="rec-status"></span>
         </div>
-
-        <!-- Chart -->
-        <div class="chart-container">
-            <canvas id="mainChart"></canvas>
+        <div class="session-strip" aria-label="Recording session status">
+            <span>Session: <strong id="sessState">idle</strong></span>
+            <span>Screen awake: <strong id="keepAwakeState">not requested</strong></span>
+            <span>Saving: <strong id="persistState">—</strong></span>
+            <span id="finalState"></span>
         </div>
-
-        <!-- Data Table -->
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr><th>Time (s)</th><th>Device</th><th>Value</th><th>Unit</th></tr>
-                </thead>
-                <tbody id="dataBody"></tbody>
+        <div id="staleBanner" class="banner banner-warn" hidden></div>
+        <!-- single screen-reader announcer: only discrete changes (state, affected streams, finalization) are spoken -->
+        <div id="srAnnounce" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
+        <p class="pause-note" id="pauseNote" hidden>Chart paused. Acquisition and recording continue.</p>
+        <div class="chart-wrap"><canvas id="liveChart" aria-label="Live sensor chart" role="img" aria-describedby="liveChartDesc"></canvas></div>
+        <p id="liveChartEmpty" class="muted" role="status" hidden></p>
+        <p id="liveChartDesc" class="sr-only">The current value, unit, freshness and sequence number of every stream are listed in the Latest values table below the chart.</p>
+        <div class="latest-wrap">
+            <table class="data-table" aria-label="Latest values">
+                <thead><tr><th scope="col">Device</th><th scope="col">Channel</th><th scope="col">Stream</th><th scope="col">Value</th><th scope="col">Unit</th><th scope="col">Raw</th><th scope="col">Seq</th><th scope="col">Flags</th></tr></thead>
+                <tbody id="latestBody"></tbody>
             </table>
         </div>
     </main>
 </div>
 
-<!-- ── Status Bar ── -->
 <footer class="status-bar">
-    <span id="statusText">No devices</span>
-    <span class="status-divider"></span>
-    <span>Readings: <strong id="readingCount">0</strong></span>
+    <span id="storageStatus">Storage: checking…</span>
+    <span class="sep" aria-hidden="true">|</span>
+    <span>Data stays on this computer. Nothing is uploaded.</span>
 </footer>
 
-<!-- ── Connection Modal ── -->
-<div class="modal-wrapper" id="connectionModal">
-    <div class="modal-overlay"></div>
-    <div class="modal">
-        <button class="modal-close">&times;</button>
-        <h2>Connect a BLE Device</h2>
+<section id="logPanel" class="log-panel" hidden aria-label="Event log">
+    <div class="log-head"><strong>Event log</strong><span class="spacer"></span>
+        <button type="button" class="btn btn-sm" id="logCopy">Copy</button>
+        <button type="button" class="btn btn-sm" id="logClear">Clear</button>
+        <button type="button" class="btn btn-sm" id="logClose" aria-label="Close log">Close</button></div>
+    <ol id="logBody" class="log-body"></ol>
+</section>
 
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="tabQuick">Quick Connect</button>
-            <button class="tab-btn" data-tab="tabCustom">Custom UUIDs</button>
-            <button class="tab-btn" data-tab="tabScan">Scan Any</button>
-            <button class="tab-btn" data-tab="tabProfiles">Saved Profiles</button>
-        </div>
-
-        <!-- Quick Connect -->
-        <div class="tab-pane active" id="tabQuick">
-            <p class="muted">Select a preset to connect instantly:</p>
-            <div class="preset-grid" id="presetGrid"></div>
-        </div>
-
-        <!-- Custom UUIDs -->
-        <div class="tab-pane" id="tabCustom">
-            <div class="form-grid">
-                <label class="full">Service UUID
-                    <input id="customService" placeholder="e.g. 6e400001-b5a3-f393-e0a9-e50e24dcca9e">
-                </label>
-                <label class="full">Characteristic UUID
-                    <input id="customChar" placeholder="e.g. beb5483e-36e1-4688-b7f5-ea07361b26a8">
-                </label>
-                <label>Data Format
-                    <select id="customDataFormat">
-                        <option value="text-float">Text (float)</option>
-                        <option value="float32-le">Float32 LE</option>
-                        <option value="float32-be">Float32 BE</option>
-                        <option value="int16-le">Int16 LE</option>
-                        <option value="int16-be">Int16 BE</option>
-                        <option value="uint16-le">Uint16 LE</option>
-                        <option value="uint16-be">Uint16 BE</option>
-                        <option value="text-csv">Text CSV</option>
-                        <option value="text-json">Text JSON</option>
-                    </select>
-                </label>
-                <label>Unit
-                    <input id="customUnit" placeholder="e.g. Ω, °C, mV">
-                </label>
-                <label>Y-Axis Label
-                    <input id="customYLabel" placeholder="e.g. Resistance">
-                </label>
-                <label>Scale Factor
-                    <input id="customScale" type="number" step="any" value="1">
-                </label>
-            </div>
-            <div class="form-actions">
-                <button class="btn btn-primary" id="customConnectBtn">Connect</button>
-                <button class="btn btn-outline" id="saveProfileBtn">Save as Profile</button>
-            </div>
-        </div>
-
-        <!-- Scan Any -->
-        <div class="tab-pane" id="tabScan">
-            <div class="scan-row">
-                <label>Name filter (optional)
-                    <input id="scanNameFilter" placeholder="e.g. SLab">
-                </label>
-                <button id="scanBtn">Scan</button>
-                <button id="scanBrowseBtn" disabled>Browse Services</button>
-            </div>
-            <div class="service-browser" id="serviceBrowser"></div>
-        </div>
-
-        <!-- Saved Profiles -->
-        <div class="tab-pane" id="tabProfiles">
-            <div id="profileList"></div>
-        </div>
+<!-- ── Add device ── -->
+<dialog id="addDialog" aria-labelledby="addTitle">
+    <form method="dialog" class="dlg-close-form"><button class="dlg-x" aria-label="Close">×</button></form>
+    <h2 id="addTitle">Add a Bluetooth device</h2>
+    <div class="tabs" role="tablist">
+        <button type="button" role="tab" class="tab" aria-selected="true" aria-controls="tabSltp" id="tabSltpBtn">SensorLab v2</button>
+        <button type="button" role="tab" class="tab" aria-selected="false" aria-controls="tabLegacy" id="tabLegacyBtn">Legacy &amp; standard</button>
+        <button type="button" role="tab" class="tab" aria-selected="false" aria-controls="tabCustom" id="tabCustomBtn">Custom UUID</button>
+        <button type="button" role="tab" class="tab" aria-selected="false" aria-controls="tabProfiles" id="tabProfilesBtn">Device profiles</button>
+        <button type="button" role="tab" class="tab" aria-selected="false" aria-controls="tabScan" id="tabScanBtn">Scan &amp; browse</button>
     </div>
-</div>
-
-<!-- ── Session Modal ── -->
-<div class="modal-wrapper" id="sessionModal">
-    <div class="modal-overlay"></div>
-    <div class="modal">
-        <button class="modal-close">&times;</button>
-        <h2>Start Recording Session</h2>
-        <form class="session-form" id="sessionForm">
-            <label>Experiment Name
-                <input id="sessionName" placeholder="e.g. Wheatstone Bridge — Trial 3" required>
-            </label>
-            <label>Group / Bench (optional)
-                <input id="sessionGroup" placeholder="e.g. Group A, Bench 4">
-            </label>
-            <button type="submit" class="btn btn-primary" style="width:100%">Start Recording</button>
+    <div class="tabpanel" role="tabpanel" id="tabSltp" aria-labelledby="tabSltpBtn">
+        <p>For nodes running the SensorLab v2 firmware (SLTP v1 protocol). These provide sequence numbers and device timestamps, so sample loss can be detected.</p>
+        <button type="button" class="btn btn-primary" id="connectSltp">Choose device…</button>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="tabLegacy" aria-labelledby="tabLegacyBtn" hidden>
+        <p class="muted">Legacy streams have <strong>no sequence numbers or device timestamps</strong>, so sample loss cannot be detected and times come from the host.</p>
+        <div id="presetList" class="preset-list"></div>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="tabCustom" aria-labelledby="tabCustomBtn" hidden>
+        <form id="customForm" class="form-grid">
+            <label class="full">Service UUID <input id="cService" required autocomplete="off" placeholder="e.g. 6e400001-b5a3-f393-e0a9-e50e24dcca9e"></label>
+            <label class="full">Characteristic UUID (notify) <input id="cChar" required autocomplete="off"></label>
+            <label>Format <select id="cFormat"></select></label>
+            <label>Unit <input id="cUnit" placeholder="Ω, °C, mV"></label>
+            <label>Label <input id="cLabel" placeholder="Resistance"></label>
+            <label>Scale factor <input id="cScale" type="number" step="any" value="1"></label>
+            <div class="full form-actions">
+                <button class="btn btn-primary" type="submit">Connect</button>
+                <button class="btn" type="button" id="saveProfileBtn">Save as profile</button>
+            </div>
         </form>
+        <h3 class="section-title">Saved profiles</h3>
+        <ul id="profileList" class="plain-list"></ul>
     </div>
-</div>
-
-<!-- ── History Modal ── -->
-<div class="modal-wrapper" id="historyModal">
-    <div class="modal-overlay"></div>
-    <div class="modal" style="width:680px">
-        <button class="modal-close">&times;</button>
-        <h2>Past Experiments</h2>
-        <div id="historyList" class="history-list">
-            <p class="muted">Loading...</p>
+    <div class="tabpanel" role="tabpanel" id="tabProfiles" aria-labelledby="tabProfilesBtn" hidden>
+        <p>Import, edit, export, and connect protocol-independent GATT profiles. Profiles configure read/notify/indicate data access only; no profile commands or writes run automatically.</p>
+        <label class="full">Profile JSON <textarea id="deviceProfileJson" rows="12" spellcheck="false" autocomplete="off" placeholder='{"schema":"sensorlab-device-profile/1","version":1,"id":"example","name":"Example sensor","transport":"web-bluetooth","adapter":"generic-gatt","characteristics":[{"id":"data","serviceUuid":"6e400001-b5a3-f393-e0a9-e50e24dcca9e","characteristicUuid":"6e400003-b5a3-f393-e0a9-e50e24dcca9e","mode":"notify","decoder":"text-float","framing":{"type":"newline"}}],"channels":[{"channelId":0,"name":"Value","unit":"","characteristicId":"data","valueIndex":0,"scale":1,"offset":0}]}'></textarea></label>
+        <div class="form-actions">
+            <label class="btn">Import JSON file <input id="deviceProfileFile" type="file" accept="application/json,.json" hidden></label>
+            <button type="button" class="btn btn-primary" id="saveDeviceProfile">Validate &amp; save</button>
+            <button type="button" class="btn" id="clearDeviceProfile">Clear editor</button>
         </div>
-        <!-- Viewer (hidden until a session is selected) -->
-        <div id="historyViewer" class="history-viewer" style="display:none">
-            <div class="history-viewer-header">
-                <button class="btn-sm" id="historyBack">← Back</button>
-                <strong id="historyViewerTitle"></strong>
-                <span class="spacer"></span>
-                <button class="btn-sm" id="historyExportCSV">CSV</button>
-                <button class="btn-sm" id="historyExportJSON">JSON</button>
-            </div>
-            <div class="history-meta" id="historyMeta"></div>
-            <div class="history-chart-wrap">
-                <canvas id="historyChart"></canvas>
-            </div>
-            <div class="history-table-wrap">
-                <table>
-                    <thead><tr><th>Time (s)</th><th>Device</th><th>Value</th><th>Unit</th></tr></thead>
-                    <tbody id="historyTableBody"></tbody>
-                </table>
-            </div>
-        </div>
+        <h3 class="section-title">Generic GATT profiles</h3>
+        <ul id="deviceProfileList" class="plain-list"></ul>
     </div>
-</div>
-
-<!-- ── Help / Info Modal ── -->
-<div class="modal-wrapper" id="helpModal">
-    <div class="modal-overlay"></div>
-    <div class="modal" style="width:620px">
-        <button class="modal-close">&times;</button>
-        <h2>Help &amp; Known Issues</h2>
-        <div class="help-content">
-            <section class="help-section">
-                <h3>Browser Requirements</h3>
-                <ul>
-                    <li><strong>Chrome or Edge required</strong> — Web Bluetooth is not supported in Firefox or Safari.</li>
-                    <li>Must be on <code>localhost</code> or <strong>HTTPS</strong> for Web Bluetooth to work.</li>
-                    <li>For LAN access, enable <code>chrome://flags/#unsafely-treat-insecure-origin-as-secure</code> and add your LAN URL (e.g. <code>http://10.x.x.x:8081</code>).</li>
-                </ul>
-            </section>
-            <section class="help-section">
-                <h3>BLE / Connection</h3>
-                <ul>
-                    <li><strong>Only 1 client at a time</strong> — ESP32 supports a single BLE connection. Disconnect other apps/tabs first.</li>
-                    <li><strong>Tab switching may disconnect</strong> — Keep this tab active during experiments. The orange warning banner will appear if you switch away.</li>
-                    <li><strong>"Scan Any" shows no data?</strong> — After scanning, click <em>Browse Services</em>, then <em>Subscribe</em> on a notify characteristic.</li>
-                    <li><strong>Device not appearing in scan?</strong> — Make sure the ESP32 is powered on and not connected to another device.</li>
-                    <li>Auto-reconnect tries 5 times with exponential backoff when a device disconnects unexpectedly.</li>
-                </ul>
-            </section>
-            <section class="help-section">
-                <h3>Recording &amp; Data</h3>
-                <ul>
-                    <li><strong>Data is only saved when recording</strong> — Click ⏺ Record and name your session before collecting data you want to keep.</li>
-                    <li><strong>Export before leaving</strong> — Data is stored in the browser's IndexedDB; clearing browser data will erase experiments.</li>
-                    <li>Use <strong>📂 History</strong> to view, export, or delete past experiments.</li>
-                    <li>CSV export from the toolbar exports in-memory data only. For full data, use History → View → CSV.</li>
-                </ul>
-            </section>
-            <section class="help-section">
-                <h3>Annotations</h3>
-                <ul>
-                    <li>Annotations mark the current time on the chart with a yellow dashed line.</li>
-                    <li>They are saved with the session and included in JSON exports.</li>
-                    <li>Add annotations to mark key experimental events (e.g. "added weight", "changed resistance").</li>
-                </ul>
-            </section>
-            <section class="help-section">
-                <h3>Quick Start</h3>
-                <ol>
-                    <li>Click <strong>+ Connect Device</strong> → pick a preset like "SensorLab ESP32".</li>
-                    <li>Click <strong>⏺ Record</strong>, name your experiment.</li>
-                    <li>Data streams live to the chart.</li>
-                    <li>Use <strong>📌 Annotate</strong> to mark key moments.</li>
-                    <li>Click <strong>⏹ Stop</strong> when done, then export CSV/JSON.</li>
-                </ol>
-            </section>
-        </div>
+    <div class="tabpanel" role="tabpanel" id="tabScan" aria-labelledby="tabScanBtn" hidden>
+        <p class="muted">Pick a nearby device, inspect readable characteristics, or subscribe to a notification characteristic. The browser only exposes services authorized by presets, profiles, or the additional UUID list below.</p>
+        <label>Name prefix (optional) <input id="scanPrefix" autocomplete="off"></label>
+        <label>Additional service UUIDs to authorize (comma-separated) <input id="scanServices" autocomplete="off" placeholder="0x180F, custom 128-bit UUID"></label>
+        <button type="button" class="btn" id="scanBtn">Scan…</button>
+        <div id="scanResults"></div>
     </div>
-</div>
+    <p id="addError" class="error" role="alert"></p>
+</dialog>
 
-<!-- ── Log Panel ── -->
-<div id="logPanel" class="log-panel">
-    <div class="log-header">
-        <span>Event Log</span>
-        <div class="log-actions">
-            <button class="btn-sm" id="logClearBtn">Clear</button>
-            <button class="btn-sm" id="logCopyBtn">Copy</button>
-            <button class="btn-sm" id="logCloseBtn">✕</button>
+<!-- ── Demo ── -->
+<dialog id="demoDialog" aria-labelledby="demoTitle">
+    <form method="dialog" class="dlg-close-form"><button class="dlg-x" aria-label="Close">×</button></form>
+    <h2 id="demoTitle">Demo mode (simulated devices)</h2>
+    <p>Virtual devices send real SLTP v1 packets through the same parser, recorder and exporter as hardware. Everything they produce is labelled <strong>SIMULATED</strong>.</p>
+    <form id="demoForm" class="form-grid">
+        <label>Devices <input id="demoCount" type="number" min="1" max="8" value="3"></label>
+        <label>Rate (Hz) <input id="demoRate" type="number" min="1" max="200" value="10"></label>
+        <fieldset class="full"><legend>Fault injection</legend>
+            <label class="check"><input type="checkbox" id="fDrop"> Drop 2% of notifications</label>
+            <label class="check"><input type="checkbox" id="fDup"> Duplicate 1%</label>
+            <label class="check"><input type="checkbox" id="fReorder"> Reorder 1%</label>
+            <label class="check"><input type="checkbox" id="fMalformed"> Malformed / bad version 1%</label>
+            <label class="check"><input type="checkbox" id="fInvalid"> Invalid channel 2%</label>
+            <label class="check"><input type="checkbox" id="fStorm"> Disconnect a random device every 20 s</label>
+        </fieldset>
+        <div class="full form-actions">
+            <button class="btn btn-primary" type="submit">Start demo</button>
+            <button class="btn" type="button" id="demoStop">Stop demo devices</button>
         </div>
+    </form>
+</dialog>
+
+<!-- ── Start recording ── -->
+<dialog id="sessionDialog" class="medium" aria-labelledby="sessionTitle" aria-describedby="sessionIntro">
+    <form method="dialog" class="dlg-close-form"><button class="dlg-x" aria-label="Cancel and close">×</button></form>
+    <h2 id="sessionTitle">Confirm recording</h2>
+    <p id="sessionIntro">You are about to record experimental sensor data. Only the ticked devices and channels below will be saved.
+        Recording starts after every explicitly required channel delivers a fresh, valid sample. The reference
+        SLab-R1 profile requires raw ADC data; derived resistance is optional. Other channels are still recorded,
+        and invalid values remain marked invalid.</p>
+    <form id="sessionForm" class="form-grid">
+        <label class="full">Experiment name <input id="sName" required maxlength="200" placeholder="Wheatstone bridge — trial 3"></label>
+        <label class="full">Group / bench (optional) <input id="sGroup" maxlength="200"></label>
+        <label class="full">Notes (optional) <textarea id="sNotes" rows="2" maxlength="2000"></textarea></label>
+        <fieldset class="full plain"><legend>Devices and channels to record</legend>
+            <div class="table-scroll"><table class="data-table wrap" aria-label="Devices and channels to record">
+                <thead><tr><th scope="col">Record</th><th scope="col">Device</th><th scope="col">State</th><th scope="col">Channels (unit)</th><th scope="col">Expected rate</th></tr></thead>
+                <tbody id="recDevices"></tbody></table></div>
+        </fieldset>
+        <label class="full check"><input type="checkbox" id="sKeepAwake" checked> Keep screen awake during the recording</label>
+        <p class="full muted" id="keepAwakeNote">Best effort: this asks the browser to stop the screen from dimming or locking while this page is visible.
+            It does <strong>not</strong> keep the app running if the page is hidden, the browser is minimised, or the operating system suspends it.</p>
+        <div class="full" id="preflightBox" aria-live="polite">
+            <ul id="pfFatal" class="pf-list pf-fatal"></ul>
+            <ul id="pfWarn" class="pf-list pf-warn"></ul>
+        </div>
+        <p class="full muted">Avoid entering personal information. Sessions are visible to anyone using this browser profile.</p>
+        <div class="full form-actions">
+            <button class="btn" type="button" id="sessionCancel">Cancel</button>
+            <button class="btn btn-primary" type="submit" id="sessionStart">Start recording</button>
+        </div>
+    </form>
+    <p id="sessionProgress" class="msg" role="status" aria-live="polite"></p>
+    <p id="sessionError" class="error" role="alert"></p>
+    <div id="startFailedActions" class="form-actions" hidden>
+        <button class="btn btn-primary" type="button" id="startRetry">Retry</button>
+        <button class="btn" type="button" id="startDismiss">Cancel</button>
     </div>
-    <div class="log-body" id="logBody"></div>
-</div>
+</dialog>
 
-<!-- ── Cloud Sync Banner (shown to guests when Firebase is configured) ── -->
-<div id="cloudBanner" class="cloud-banner">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>
-    <span>Sign in to sync experiments across devices</span>
-    <button class="btn btn-sm btn-outline" id="cloudBannerSignIn">Sign in with Google</button>
-    <button class="btn btn-sm btn-ghost" id="cloudBannerDismiss">Dismiss</button>
-</div>
+<!-- ── Annotate ── -->
+<dialog id="annotateDialog" aria-labelledby="annTitle">
+    <form method="dialog" class="dlg-close-form"><button class="dlg-x" aria-label="Close">×</button></form>
+    <h2 id="annTitle">Annotation</h2>
+    <form id="annotateForm" class="form-grid">
+        <p class="full">Marked at <strong id="annTime"></strong>, the moment you pressed Annotate.</p>
+        <label class="full">Text <input id="annText" required maxlength="500" placeholder="added 100 g"></label>
+        <div class="full form-actions"><button class="btn btn-primary" type="submit">Save</button></div>
+    </form>
+</dialog>
 
-<!-- ── Toast container ── -->
-<div class="toast-container" id="toastContainer"></div>
+<!-- ── Device settings (rename / rate / calibration) ── -->
+<dialog id="deviceDialog" aria-labelledby="devTitle">
+    <form method="dialog" class="dlg-close-form"><button class="dlg-x" aria-label="Close">×</button></form>
+    <h2 id="devTitle">Device settings</h2>
+    <form id="renameForm" class="form-grid">
+        <label class="full">Display name <input id="dName" maxlength="64"></label>
+        <div class="full form-actions"><button class="btn" type="submit">Rename</button></div>
+    </form>
+    <form id="rateForm" class="form-grid">
+        <label>Sample rate (Hz) <input id="dRate" type="number" step="any" min="0.1" max="1000"></label>
+        <div class="form-actions"><button class="btn" type="submit">Set rate</button></div>
+        <p class="full muted" id="rateNote"></p>
+    </form>
+    <h3 class="section-title">Calibration</h3>
+    <form id="calForm" class="form-grid">
+        <label class="full">Channel <select id="calChannel"></select></label>
+        <p class="full muted" id="calCurrent"></p>
+        <label>Gain <input id="calGain" type="number" step="any" value="1"></label>
+        <label>Offset <input id="calOffset" type="number" step="any" value="0"></label>
+        <div class="full form-actions">
+            <button class="btn" type="submit">Apply gain/offset</button>
+            <button class="btn" type="button" id="calTare">Tare (zero current reading)</button>
+            <button class="btn" type="button" id="calReset">Reset</button>
+        </div>
+        <p class="full muted">value = (raw × device scale + device offset) × gain + offset − tare. Raw values are always stored unchanged, and every change is logged in the session.</p>
+    </form>
+    <p id="devMsg" class="msg" role="status"></p>
+</dialog>
 
-<!-- ── Scripts ── -->
-<script src="js/firebase-config.js"></script>
-<script src="js/auth-manager.js"></script>
-<script src="js/cloud-store.js"></script>
-<script src="js/ble-manager.js"></script>
-<script src="js/data-store.js"></script>
-<script src="js/chart-manager.js"></script>
-<script src="js/app.js"></script>
+<!-- ── History ── -->
+<dialog id="historyDialog" class="wide" aria-labelledby="histTitle">
+    <form method="dialog" class="dlg-close-form"><button class="dlg-x" aria-label="Close">×</button></form>
+    <h2 id="histTitle">Recorded sessions</h2>
+    <div id="histListView">
+        <div class="hist-tools">
+            <span id="histStorage" class="muted"></span>
+            <span class="spacer"></span>
+            <button type="button" class="btn btn-sm" id="persistBtn">Request persistent storage</button>
+            <label class="btn btn-sm file-btn">Import JSON… <input type="file" id="importFile" accept=".json,application/json"></label>
+            <button type="button" class="btn btn-sm btn-danger" id="wipeBtn">Delete all…</button>
+        </div>
+        <div id="histState" role="status" aria-live="polite"></div>
+        <table class="data-table" id="histTable" hidden>
+            <thead><tr><th scope="col">Name</th><th scope="col">Started</th><th scope="col">State</th><th scope="col">Channel readings</th><th scope="col">Devices</th><th scope="col">Actions</th></tr></thead>
+            <tbody id="histBody"></tbody>
+        </table>
+    </div>
+    <div id="histDetail" hidden>
+        <div class="hist-tools">
+            <button type="button" class="btn btn-sm" id="histBack">← Back</button>
+            <strong id="detailTitle"></strong><span class="spacer"></span>
+            <button type="button" class="btn btn-sm" id="exCsv">CSV</button>
+            <button type="button" class="btn btn-sm" id="exJson">JSON</button>
+            <button type="button" class="btn btn-sm" id="exZip">ZIP (CSV + metadata)</button>
+        </div>
+        <div id="exportParts" class="export-parts" role="region" aria-label="Export in parts" hidden></div>
+        <ul id="detailWarnings" class="warnings"></ul>
+        <dl id="detailMeta" class="meta-grid"></dl>
+        <div class="chart-wrap small"><canvas id="historyChart" role="img" aria-label="Session chart" aria-describedby="detailChartNote detailSeries"></canvas></div>
+        <table class="data-table" id="detailSeriesTable" aria-label="Per-series numerical summary"><caption class="sr-only" id="detailSeries">Numerical summary of each recorded series (the chart shows the same data).</caption><thead><tr><th scope="col">Series</th><th scope="col">Unit</th><th scope="col">Channel readings</th><th scope="col">Invalid</th><th scope="col">Min</th><th scope="col">Max</th><th scope="col">First (s)</th><th scope="col">Last (s)</th></tr></thead><tbody id="detailSeriesBody"></tbody></table>
+        <p class="muted" id="detailChartNote"></p>
+        <h3 class="section-title">Data quality per device</h3>
+        <div class="table-scroll"><table class="data-table"><thead><tr><th scope="col">Device</th><th scope="col">Protocol</th><th scope="col">Packets received</th><th scope="col">Missing</th><th scope="col">Gaps (longest)</th><th scope="col">Dup / late</th><th scope="col">Invalid pkts</th><th scope="col">Invalid samples</th><th scope="col">Interval mean ± sd (ms)</th><th scope="col">Rate (Hz)</th><th scope="col">Disconnects</th></tr></thead><tbody id="detailQuality"></tbody></table></div>
+        <h3 class="section-title">Annotations</h3>
+        <ul id="detailAnnotations" class="plain-list"></ul>
+    </div>
+    <p id="histMsg" class="msg" role="status"></p>
+</dialog>
 
+<!-- ── Confirm ── -->
+<dialog id="confirmDialog" aria-labelledby="confirmTitle">
+    <h2 id="confirmTitle">Confirm</h2>
+    <p id="confirmText"></p>
+    <label id="confirmTypedWrap" hidden>Type <strong>DELETE</strong> to confirm <input id="confirmTyped" autocomplete="off"></label>
+    <div class="form-actions">
+        <button type="button" class="btn" id="confirmCancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmOk">Confirm</button>
+    </div>
+</dialog>
+
+<!-- ── Install ── -->
+<dialog id="installDialog" aria-labelledby="installTitle" aria-describedby="installIntro">
+    <form method="dialog" class="dlg-close-form"><button class="dlg-x" aria-label="Close">×</button></form>
+    <h2 id="installTitle">Add SensorLab to your home screen</h2>
+    <p id="installIntro">Launch SensorLab from an app icon, like a regular app.</p>
+    <ol>
+        <li>Open SensorLab in Chrome on your Android phone from its HTTPS website. Installation is not available from a downloaded file.</li>
+        <li>If Chrome offers <strong>Install SensorLab</strong> below, tap it and confirm. Otherwise, open Chrome’s <strong>⋮</strong> menu and choose <strong>Install app</strong> or <strong>Add to Home screen</strong>, then confirm.</li>
+    </ol>
+    <p class="muted">After the first successful load, the app shell can open offline. Keep the page visible while recording; Android may pause apps in the background.</p>
+    <p id="installStatus" class="msg" role="status" aria-live="polite"></p>
+    <div class="form-actions">
+        <button id="installAction" class="btn btn-primary" type="button" hidden>Install SensorLab</button>
+        <form method="dialog"><button class="btn" type="submit">Close</button></form>
+    </div>
+</dialog>
+
+<!-- ── Help ── -->
+<dialog id="helpDialog" class="wide" aria-labelledby="helpTitle">
+    <form method="dialog" class="dlg-close-form"><button class="dlg-x" aria-label="Close">×</button></form>
+    <h2 id="helpTitle">Help &amp; limitations</h2>
+    <div class="help">
+        <h3>Requirements</h3>
+        <ul>
+            <li>Chrome or Edge (Web Bluetooth). Firefox and Safari are not supported. Without Bluetooth you can still use Demo mode, history and export.</li>
+            <li><strong>Keep this page visible while recording.</strong> Browsers can throttle or disconnect Bluetooth in hidden tabs or when the screen locks. Hidden periods are logged in the session.</li>
+            <li>No internet is needed or used. Data is stored in this browser profile only. Export it, because clearing browser data deletes it.</li>
+        </ul>
+        <h3>Recording</h3>
+        <ul>
+            <li>Readings are saved continuously (every ~0.25 s) while recording, not only when you press Stop.</li>
+            <li>If the app closes during a recording, the session is marked <em>interrupted</em> on the next launch and can be recovered. Data after the last save is lost; the app does not invent it.</li>
+            <li>Exports come from stored data (History), not from the chart.</li>
+        </ul>
+        <h3>Device states</h3>
+        <ul>
+            <li><strong>Waiting for data</strong>: connected and subscribed, but no valid reading has arrived yet.</li>
+            <li><strong>Streaming</strong>: valid readings are arriving. <strong>Degraded</strong>: connected but stalled.</li>
+            <li><strong>Backoff</strong>: reconnecting automatically, with increasing delays. <strong>Failed</strong>: gave up; press Retry.</li>
+        </ul>
+        <h3>Data quality</h3>
+        <ul>
+            <li><strong>Missing</strong> counts sequence numbers that never arrived (SensorLab v2 firmware only). A gap shows that data is missing, not where it was lost.</li>
+            <li>Legacy devices have no sequence numbers, so loss cannot be detected for them.</li>
+            <li>Rates, jitter and timing accuracy shown are measurements of this session, not guarantees.</li>
+        </ul>
+    </div>
+</dialog>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
 </body>
 </html>
