@@ -1,0 +1,300 @@
+# 2026-10-13T23:38:37.106Z $ node --test --experimental-test-coverage "--test-coverage-include=src/**" "test/unit/**/*.test.js"
+✔ readings carry (deviceId, channelId) identity, engineering units and SIMULATED flag (22.0012ms)
+✔ fault injection: drops, duplicates, reordering, malformed, bad version are all accounted (391.9649ms)
+✔ invalid channel bit → value null + INVALID flag, raw preserved (no sentinel numbers) (58.3875ms)
+✔ legacy text-float with open-circuit sentinel: SENTINEL+INVALID, HOST_TIME_ONLY (11.521ms)
+[SensorLab] sink error (acquisition continues) Error: chart exploded
+    at file:///D:/2026/sensorlab/sensorlab-iitgn/test/unit/acquisition.test.js:83:31
+    at AcquisitionService._onBytes (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/acquisition-service.js:200:23)
+    at Object.onBytes (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/acquisition-service.js:91:50)
+    at DeviceConnection._onBytes (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/device-connection.js:172:34)
+    at file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/device-connection.js:128:72
+    at doIt (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:139:46)
+    at SimulatedDevice._deliver (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:142:67)
+    at SimulatedDevice._emit (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:128:47)
+    at SimulatedDevice._sample (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:95:18)
+    at Object.fn (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:83:56)
+[SensorLab] sink error (acquisition continues) Error: chart exploded
+    at file:///D:/2026/sensorlab/sensorlab-iitgn/test/unit/acquisition.test.js:83:31
+    at AcquisitionService._onBytes (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/acquisition-service.js:200:23)
+    at Object.onBytes (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/acquisition-service.js:91:50)
+    at DeviceConnection._onBytes (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/device-connection.js:172:34)
+    at file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/device-connection.js:128:72
+    at doIt (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:139:46)
+    at SimulatedDevice._deliver (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:142:67)
+    at SimulatedDevice._emit (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:128:47)
+    at SimulatedDevice._sample (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:95:18)
+    at Object.fn (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:83:56)
+[SensorLab] sink error (acquisition continues) Error: chart exploded
+    at file:///D:/2026/sensorlab/sensorlab-iitgn/test/unit/acquisition.test.js:83:31
+    at AcquisitionService._onBytes (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/acquisition-service.js:200:23)
+    at Object.onBytes (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/acquisition-service.js:91:50)
+    at DeviceConnection._onBytes (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/device-connection.js:172:34)
+    at file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/device-connection.js:128:72
+    at doIt (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:139:46)
+    at SimulatedDevice._deliver (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:142:67)
+    at SimulatedDevice._emit (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:128:47)
+    at SimulatedDevice._sample (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:95:18)
+    at Object.fn (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:83:56)
+[SensorLab] sink error (acquisition continues) Error: chart exploded
+    at file:///D:/2026/sensorlab/sensorlab-iitgn/test/unit/acquisition.test.js:83:31
+    at AcquisitionService._onBytes (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/acquisition-service.js:200:23)
+    at Object.onBytes (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/acquisition-service.js:91:50)
+    at DeviceConnection._onBytes (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/device-connection.js:172:34)
+    at file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/device-connection.js:128:72
+    at doIt (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:139:46)
+    at SimulatedDevice._deliver (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:142:67)
+    at SimulatedDevice._emit (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:128:47)
+    at SimulatedDevice._sample (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:95:18)
+    at Object.fn (file:///D:/2026/sensorlab/sensorlab-iitgn/src/transport/simulated.js:83:56)
+✔ a throwing visualization sink does not stop recording hand-off (20.5977ms)
+✔ relative time restarts at recording start and uses the device clock (61.0875ms)
+✔ tare zeroes the current reading; calibration changes are versioned and logged (27.346ms)
+✔ calibration math (2.0708ms)
+✔ annotations require a recording and use the capture time, not completion time (2.0093ms)
+✔ legacy multi-channel device added during recording: session metadata gets every channel (3.5843ms)
+✔ check-export accepts a correct export with a gap, a late arrival and a power-cycle epoch; matches app quality (33.0917ms)
+✔ check-export rejects tampering: duplicate row, unflagged jump, unflagged backward step, quality mismatch (35.8857ms)
+✔ permission denied / blocked by policy: requestDevice rejects with the browser error, nothing is added (5.0335ms)
+✔ missing GATT service: bounded retries, then DEAD with the service error visible; no listeners leaked (552.1538ms)
+✔ failed notification subscription: listener removed (no leak), retried, recovers with exactly one listener (32.7008ms)
+✔ repeated link loss: listeners never accumulate across reconnects (107.3784ms)
+✔ connect → discover → subscribe → WAITING_FOR_DATA → STREAMING only after first valid sample (18.644ms)
+✔ connected but silent device is DEGRADED, never STREAMING (31.7024ms)
+✔ stream stall after streaming → DEGRADED with STALE, recovers when data resumes (34.652ms)
+✔ connect timeout watchdog fires; failure goes to BACKOFF, not a hang (61.1295ms)
+✔ disconnect → bounded jittered backoff → reconnect with fresh subscription; stale handler ignored (16.4403ms)
+✔ retry exhaustion → DEAD with explicit error; explicit retry recovers (8.1881ms)
+✔ backoff delays are capped and jittered within [d/2, d] (0.4043ms)
+✔ multiple devices disconnect simultaneously; one failing does not reset another (575.5983ms)
+✔ invalid INFO (protocol mismatch) is non-retryable → DEAD, no loop (1.6748ms)
+✔ two devices reporting the same serial: second is refused (no merged streams) (2.792ms)
+✔ user close does not trigger reconnect and removes all listeners (131.7317ms)
+✔ sample-rate control is confirmed by INFO readback; out-of-range rejected (2.6419ms)
+✔ slow sensor (0.25 Hz) is not reported as stalled between its normal samples (rate-aware stall threshold) (19.0944ms)
+✔ 1000 known samples × 2 devices × 2 channels: exact counts, values, timestamps, ordering, identity, export equality (1128.411ms)
+✔ known faults: duplicate suppressed, late packet stored+flagged, malformed rejected, gap counted, with exact expected totals (535.6141ms)
+✔ bursty BLE delivery (20 packets per 400 ms connection event at 50 Hz): all stored, device timing exact, never marked stale (106.4548ms)
+✔ session isolation: consecutive sessions never share samples (191.5574ms)
+✔ reload: a completed session reads back identically from a fresh repository instance (127.1746ms)
+✔ delayed storage writes (2 s each): never overlapping, nothing duplicated or lost, Stop waits and reports STOPPING until done (107.7099ms)
+  [measured] 120k-row CSV build 634 ms, JSON build 97 ms, CSV 10.8 MB
+✔ CSV field escaping: quotes, commas, newlines, formula triggers on text only (2.2993ms)
+✔ CSV: header, BOM, CRLF, complete row count, device/channel association, Unicode units (5.2894ms)
+✔ empty session exports header only and reports integrity (0.6191ms)
+✔ large session (>100,000 samples): complete, bounded time (1017.0725ms)
+✔ JSON export: versioned schema, metadata/diagnostics separated, semantic round trip (0.9786ms)
+✔ integrity warnings: open, recovered, corrupt, missing, unsaved, simulated (0.4225ms)
+✔ annotations CSV escapes free text (0.4547ms)
+✔ filename sanitization (2.7625ms)
+✔ ZIP bundle is a valid archive readable by an independent implementation (python zipfile) (583.196ms)
+✔ integrity warnings for startup failure and lifecycle events; lifecycle exported in metadata (0.6218ms)
+✔ bounded export: JSON parts are byte-identical to buildJson, each part ≤ ~1 MB, and parse back (235.4056ms)
+✔ bounded export: buildZipParts == buildZip, accepts CSV parts without joining, and is CRC/size-correct per part (699.8151ms)
+✔ bounded export: ZIP32 limit is an explicit error, not silent corruption (0.7979ms)
+✔ download blob URL stays valid long enough for large files (6 M-reading CSV was cancelled at 10 s) (1.1339ms)
+✔ history export uses bounded builders and reports a hand-off, not a completed save (0.4057ms)
+✔ large export split: utf8Length is exact; CSV parts are complete files whose rows concatenate to the original (561.5833ms)
+✔ history export guards the single-download limit (parts for CSV/ZIP, explicit refusal for JSON) (0.6164ms)
+✔ history export clears a previous parts panel before starting a new export (0.3896ms)
+✔ initial status is not_requested; enable → active; disable releases the lock (2.6764ms)
+✔ API absent → unavailable (never claimed active) (0.4913ms)
+✔ request rejected (e.g. NotAllowedError / power saver) → failed with reason (0.4246ms)
+✔ system release on hide → released (honest), reacquired when visible again while still wanted (23.7517ms)
+✔ no reacquisition after disable (recording ended) (1.0892ms)
+✔ enable while hidden does not pretend: released, acquired on visibility (0.6833ms)
+✔ native adapter interface and selection (1.1255ms)
+✔ no legacy database: nothing imported and none created (12.6994ms)
+✔ legacy sessions with identical names are split by time range, flagged, imported once (31.9704ms)
+✔ convertLegacy handles empty input (0.349ms)
+✔ text-float: strict numbers only (3.4233ms)
+✔ text-csv: all fields must parse; no silent filtering (0.4584ms)
+✔ text-json shapes; ambiguous objects rejected (0.5556ms)
+✔ binary formats: exact length, endianness, signedness (0.4155ms)
+✔ GATT heart rate measurement: uint8 and uint16 forms (0.2353ms)
+✔ unknown format and non-bytes are explicit errors (0.5187ms)
+✔ full path via the real Web Bluetooth driver: connect → notify → parse → track → record → crash → recover → export (120.126ms)
+✔ driver: connect failure surfaces as BACKOFF and a later attempt succeeds (10.8242ms)
+✔ driver: chooser cancelled → NotFoundError propagates (no device added) (3.0046ms)
+✔ driver: listServices and control write + INFO readback through the W3C API (7.438ms)
+✔ REGRESSION: quality of a device removed mid-recording is kept in the saved session (33.4017ms)
+✔ REGRESSION: connection events before recording do not leak into the session statistics (27.976ms)
+✔ session state machine rejects illegal transitions and derives health (4.269ms)
+✔ fatal preflight (no devices / storage unavailable / device not connected) creates no session (658.9516ms)
+✔ preflight warnings (excluded device, keep-awake unsupported) do not block; excluded device not recorded (32.5589ms)
+✔ keep-awake requested by default, can be disabled, and a failure is a warning (not claimed active) (18.5765ms)
+✔ header persisted before any sample; STARTING until valid samples on every stream; then RECORDING (10.383ms)
+✔ invalid-only data does not pass startup verification (61.1015ms)
+✔ startup timeout: START_FAILED, session finalised as startup_failed with diagnostics, keep-awake released (45.1507ms)
+✔ session header write failure: START_FAILED, resources released, nothing recording (3.2033ms)
+✔ duplicate Record submissions create exactly one session (controller and recorder guards; defect D24) (10.6793ms)
+✔ stale detection scales with each stream's expected interval (50 Hz vs 1 Hz) (43.1678ms)
+✔ on-change streams are not judged stale from silence (0.257ms)
+✔ one device disconnects: its streams RECOVERING, other keeps recording; reconnect → FRESH only after new samples; no duplicates (86.2782ms)
+✔ retry exhaustion → DISCONNECTED stream, session INTERRUPTED; manual retry recovers (682.2865ms)
+✔ export agrees with stored samples, units, session id, and quality counters (34.8693ms)
+✔ storage failure during recording is surfaced and retried; failure at finalization gives FINALIZE_FAILED (no false success) (25.7994ms)
+✔ repeated/concurrent Stop shares one finalization; Stop after completion is a no-op (3.9733ms)
+✔ Stop during startup cancels cleanly (session marked startup_cancelled, not a recording) (2.7152ms)
+✔ Cancel during PREFLIGHT or before verification begins is honoured (no recording starts) (22.4059ms)
+✔ visibility changes, timer stalls and wall-clock jumps are logged as lifecycle events (5.6362ms)
+✔ device removed during recording: quality summary kept, excluded from health, others continue (13.4404ms)
+✔ crash during recording: session detected as interrupted and recovered with its lifecycle trail (9.1539ms)
+✔ simulated demo devices go through the same lifecycle (SIMULATED warning in preflight) (8.0593ms)
+✔ lifecycle event log is bounded and counts what it drops (never silent) (30.1828ms)
+✔ every data vector decodes to its declared fields (little-endian, signed) (3.481ms)
+✔ encoder produces the hand-computed bytes exactly (0.5928ms)
+✔ every invalid vector is rejected with the expected code (0.3812ms)
+✔ parser accepts DataView with non-zero byteOffset (no whole-buffer decode) (2.4403ms)
+✔ channel count must match device info when known (0.7827ms)
+✔ min and max valid lengths (0.3433ms)
+✔ int32 boundary values round-trip (0.3164ms)
+✔ fuzz: random bytes never throw and always return ok or a coded error (42.0151ms)
+✔ device info: valid round trip and strict validation (2.3592ms)
+✔ control encode matches vectors; device-side decode validates (5.2999ms)
+✔ cleanup after "preflight fatal (storage unavailable)" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (67.731ms)
+✔ cleanup after "preflight fatal (storage unavailable)" (keep-awake unticked): keep-awake released/never requested, no leaks, restart works (48.1519ms)
+✔ cleanup after "Cancel during PREFLIGHT" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (37.8203ms)
+✔ cleanup after "Cancel during PREFLIGHT" (keep-awake unticked): keep-awake released/never requested, no leaks, restart works (30.9443ms)
+✔ cleanup after "Cancel during keep-awake request" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (30.6625ms)
+✔ cleanup after "Cancel during session-header write" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (34.125ms)
+✔ cleanup after "Cancel during session-header write" (keep-awake unticked): keep-awake released/never requested, no leaks, restart works (28.5496ms)
+✔ cleanup after "session-header write failure" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (12.1062ms)
+✔ cleanup after "session-header write failure" (keep-awake unticked): keep-awake released/never requested, no leaks, restart works (20.3041ms)
+✔ cleanup after "Cancel while the session-header write rejects" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (19.2419ms)
+✔ cleanup after "Cancel while the session-header write rejects" (keep-awake unticked): keep-awake released/never requested, no leaks, restart works (23.3064ms)
+✔ cleanup after "startup verification timeout" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (37.1477ms)
+✔ cleanup after "startup verification timeout" (keep-awake unticked): keep-awake released/never requested, no leaks, restart works (47.6116ms)
+✔ cleanup after "Cancel during startup verification" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (15.3183ms)
+✔ cleanup after "Cancel during startup verification" (keep-awake unticked): keep-awake released/never requested, no leaks, restart works (16.487ms)
+✔ cleanup after "Cancel during verification + finalization write fails" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (25.4389ms)
+✔ cleanup after "Cancel during verification + finalization write fails" (keep-awake unticked): keep-awake released/never requested, no leaks, restart works (16.5084ms)
+✔ cleanup after "Stop with finalization failure" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (33.4349ms)
+✔ cleanup after "Stop with finalization failure" (keep-awake unticked): keep-awake released/never requested, no leaks, restart works (34.8658ms)
+✔ cleanup after "device disconnect during PREFLIGHT" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (527.896ms)
+✔ cleanup after "device disconnect during PREFLIGHT" (keep-awake unticked): keep-awake released/never requested, no leaks, restart works (559.9016ms)
+✔ cleanup after "device disconnect during STARTING (header write), no reconnect" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (452.3499ms)
+✔ cleanup after "device disconnect during STARTING (header write), no reconnect" (keep-awake unticked): keep-awake released/never requested, no leaks, restart works (411.9744ms)
+✔ cleanup after "device disconnect during verification, reconnects in time" (keep-awake ticked): keep-awake released/never requested, no leaks, restart works (13.0504ms)
+✔ cleanup after "device disconnect during verification, reconnects in time" (keep-awake unticked): keep-awake released/never requested, no leaks, restart works (19.7576ms)
+✔ a second start() while a cancelled start is unwinding is rejected as duplicate (also from a synchronous state listener) (7.533ms)
+✔ Stop pressed during STOPPING shares one finalization (one finalizing event, keep-awake released once) (10.5916ms)
+✔ Stop in START_FAILED is a no-op; acknowledge outside terminal states is a no-op (17.8833ms)
+✔ Stop pressed while a verification-timeout is being finalized: one outcome, START_FAILED, nothing open (28.4136ms)
+✔ BrowserWakeLock: disable() while a request is pending releases the late sentinel (1.0445ms)
+✔ BrowserWakeLock: overlapping acquisitions (enable + visibility reacquire) leave no wake lock held after disable() (0.5735ms)
+⚠ start() resolves (never wedges in PREFLIGHT/STARTING) when a dependency throws (2.4783ms) # DEFECT R3: an exception in _start (storageStatus / keepAwake.enable) rejects start() and leaves the state machine stuck
+✔ session header is written before any reading; unique IDs for identical names (23.7723ms)
+✔ header write failure → recording does not start, nothing accepted (0.9641ms)
+✔ continuous batched persistence: data is in storage before Stop (18.5238ms)
+✔ transient storage error: retried with the same chunk (no duplicates), error surfaced (24.8866ms)
+✔ persistent storage failure: stop reports unsaved readings honestly (no false "saved") (18.1639ms)
+✔ backpressure: readings beyond maxPending are counted as droppedUnsaved, not silently lost (33.2083ms)
+✔ interrupted session detected (lock released / stale heartbeat), recovery idempotent, no fabricated data (8.6011ms)
+✔ corrupt or missing chunks are detected and reported, valid data still readable (15.1287ms)
+✔ delete one session only (same display name) and wipe all (7.6686ms)
+✔ annotation write failure is reported, not swallowed (1.423ms)
+✔ contiguous sequence: no gaps, exact device intervals (4.6417ms)
+✔ single and multiple missing samples are counted and located (4.5397ms)
+✔ duplicate is rejected and counted, not stored (1.2101ms)
+✔ late (out-of-order) packet fills a counted gap (0.523ms)
+✔ sequence wraparound 2^32-1 → 0 is a forward step, not a gap (0.4629ms)
+✔ device timestamp rollover (≈71.6 min) is unwrapped monotonically (0.3294ms)
+✔ long continuous run across several timestamp wraps stays monotonic (46.6528ms)
+✔ host silence longer than half the wrap period → explicit timebase reset, no guessing (1.0309ms)
+✔ BOOT flag starts a new epoch: no false gap, restart counted (0.46ms)
+✔ device overrun flag attributes the gap to the device (0.3215ms)
+✔ clock going backwards on a forward step is flagged as an anomaly (0.2668ms)
+✔ resetCounters keeps continuity: first packet after reset is not a false gap (0.3198ms)
+✔ relative time uses the anchored device clock (host jitter does not leak into intervals) (0.3712ms)
+✔ legacy streams are host-time only and never report gaps (0.4094ms)
+✔ drift estimate from windowed minimum offsets (5.7078ms)
+✔ newEpoch (boot nonce changed while disconnected): sequence reset is not misread as late packets (0.5337ms)
+✔ ring buffer is bounded and keeps the newest points (5.0536ms)
+✔ decimation preserves extremes and is bounded (30.4433ms)
+✔ decimation keeps gaps as null points (lines never bridge missing data) (4.5627ms)
+✔ series are keyed by device AND channel; units get separate axes (0.5302ms)
+ℹ tests 170
+ℹ suites 0
+ℹ pass 169
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 1
+ℹ duration_ms 3357.2815
+ℹ start of coverage report
+ℹ -----------------------------------------------------------------------------------------------------------
+ℹ file                     | line % | branch % | funcs % | uncovered lines
+ℹ -----------------------------------------------------------------------------------------------------------
+ℹ src                      |        |          |         | 
+ℹ  acquisition             |        |          |         | 
+ℹ   acquisition-service.js |  92.70 |    84.83 |   86.54 | 56-59 225-230 240-243 258-264 400-406 409-410
+ℹ   calibration.js         |  97.87 |    75.00 |  100.00 | 23
+ℹ   device-connection.js   |  97.41 |    77.14 |  100.00 | 193-194 196-198 256-257
+ℹ   preflight.js           |  95.24 |    65.12 |  100.00 | 30-32
+ℹ   quality.js             |  83.02 |   100.00 |   87.50 | 25-33
+ℹ   session-controller.js  | 100.00 |    91.43 |   96.15 | 
+ℹ   session-state.js       | 100.00 |    84.00 |   90.00 | 
+ℹ   stream-health.js       | 100.00 |    90.14 |  100.00 | 
+ℹ   stream-tracker.js      |  98.52 |    96.00 |  100.00 | 141-142 203-204
+ℹ  export                  |        |          |         | 
+ℹ   export.js              |  99.30 |    74.66 |  100.00 | 75-76
+ℹ   zip.js                 | 100.00 |    97.14 |  100.00 | 
+ℹ  platform                |        |          |         | 
+ℹ   keep-awake.js          | 100.00 |    84.85 |   75.86 | 
+ℹ  protocol                |        |          |         | 
+ℹ   legacy.js              | 100.00 |    90.77 |   83.33 | 
+ℹ   sltp.js                |  99.49 |    85.59 |  100.00 | 178
+ℹ  storage                 |        |          |         | 
+ℹ   idb-repository.js      |  94.54 |    77.65 |   81.63 | 32-37 230-234 237-238
+ℹ   legacy-import.js       | 100.00 |    55.26 |   82.14 | 
+ℹ   recorder.js            | 100.00 |    85.34 |   96.97 | 
+ℹ  transport               |        |          |         | 
+ℹ   simulated.js           |  87.19 |    81.65 |   84.09 | 191 201-207 228-232 253-256 263-281
+ℹ   web-bluetooth.js       |  96.67 |    80.56 |   90.91 | 25-27 48
+ℹ  ui                      |        |          |         | 
+ℹ   dom.js                 |  36.28 |    66.67 |    6.25 | 9-23 28-31 35-42 49-70 82-89 92-96 99-104 107-110
+ℹ  util                    |        |          |         | 
+ℹ   clock.js               | 100.00 |    96.30 |   78.26 | 
+ℹ  viz                     |        |          |         | 
+ℹ   series.js              | 100.00 |    93.75 |   92.86 | 
+ℹ -----------------------------------------------------------------------------------------------------------
+ℹ all files                |  95.20 |    83.52 |   87.33 | 
+ℹ -----------------------------------------------------------------------------------------------------------
+ℹ end of coverage report
+
+✖ failing tests:
+
+test at test\unit\startup-races.test.js:454:1
+⚠ start() resolves (never wedges in PREFLIGHT/STARTING) when a dependency throws (2.4783ms) # DEFECT R3: an exception in _start (storageStatus / keepAwake.enable) rejects start() and leaves the state machine stuck
+  AssertionError [ERR_ASSERTION]: start() should resolve { ok:false }, not reject: storage estimate exploded
+  + actual - expected
+  
+  + Error: storage estimate exploded
+  +     at r.ctl.storageStatus (file:///D:/2026/sensorlab/sensorlab-iitgn/test/unit/startup-races.test.js:457:51)
+  +     at SessionController.preflight (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/session-controller.js:95:65)
+  +     at SessionController._start (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/session-controller.js:117:31)
+  +     at SessionController.start (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/session-controller.js:110:35)
+  +     at TestContext.<anonymous> (file:///D:/2026/sensorlab/sensorlab-iitgn/test/unit/startup-races.test.js:459:46)
+  +     at async Test.run (node:internal/test_runner/test:1313:7)
+  +     at async Test.processPendingSubtests (node:internal/test_runner/test:897:7)
+  - undefined
+  
+      at TestContext.<anonymous> (file:///D:/2026/sensorlab/sensorlab-iitgn/test/unit/startup-races.test.js:460:16)
+      at async Test.run (node:internal/test_runner/test:1313:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: storage estimate exploded
+        at r.ctl.storageStatus (file:///D:/2026/sensorlab/sensorlab-iitgn/test/unit/startup-races.test.js:457:51)
+        at SessionController.preflight (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/session-controller.js:95:65)
+        at SessionController._start (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/session-controller.js:117:31)
+        at SessionController.start (file:///D:/2026/sensorlab/sensorlab-iitgn/src/acquisition/session-controller.js:110:35)
+        at TestContext.<anonymous> (file:///D:/2026/sensorlab/sensorlab-iitgn/test/unit/startup-races.test.js:459:46)
+        at async Test.run (node:internal/test_runner/test:1313:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:897:7),
+    expected: undefined,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+exit=0

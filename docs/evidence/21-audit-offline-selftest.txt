@@ -1,0 +1,16 @@
+# 2026-10-13T23:35:49.659Z $ npm run audit:offline -- --self-test
+
+> sensorlab@2.0.0-dev audit:offline
+> node scripts/audit-offline.mjs --self-test
+
+  ✔ caught planted remote script → index.html: remote URL https://cdn.example.com/lib.js
+  ✔ caught planted fetch() (same-origin path, no URL) → sensorlab.js: fetch() in app code
+  ✔ caught planted dynamic import() → sensorlab.js: dynamic import()
+  ✔ caught planted CSS import (relative) → css/styles.css: CSS import/url()
+  ✔ caught planted source map → sensorlab.js: source map shipped/referenced
+  ✔ caught planted weakened CSP (in the meta tag, not the comment) → index.html: CSP must contain connect-src 'none'
+  ✔ caught planted missing precached asset → sw.js: precached asset missing: css/missing.css
+  ✔ caught planted missing referenced asset → index.html: referenced asset missing: sensorlab-missing.js
+  ✔ unmodified copy passes (0 problems)
+offline audit self-test: OK (8/8 planted violations caught)
+exit=0

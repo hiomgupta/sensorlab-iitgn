@@ -1,0 +1,37 @@
+# 2026-10-13T23:35:37.077Z $ npm run test:package
+
+> sensorlab@2.0.0-dev test:package
+> node test/e2e/smoke-package.mjs
+
+  ✔ release zip matches its recorded SHA-256 — ffda03567ef0c1a0…
+  ✔ package contains index.html
+  ✔ package contains sensorlab.js
+  ✔ package contains css/styles.css
+  ✔ package contains vendor/chart.umd.min.js
+  ✔ package contains sw.js
+  ✔ package contains manifest.webmanifest
+  ✔ package contains serve.ps1
+  ✔ package contains START-HERE.txt
+  ✔ package contains firmware/sensorlab_node/sensorlab_node.ino
+  ✔ package contains docs/OFFLINE_DEPLOYMENT.md
+  ✔ package needs no node_modules / dev server (none shipped, none referenced by index.html)
+[file://] extracted package, fresh profile, network blocked
+  ✔ boots from the extracted folder (file://) with no network
+  ✔ no service worker on file:// (unsupported there by the browser; the app does not need one) — SecurityError: Failed to get ServiceWorkerRegistration objects: The URL pro
+  ✔ record → verified RECORDING → stop → finalized — {"id":"2d5ff571-a91e-44cb-a3cf-78505883f528","n":224,"state":"closed"}
+  ✔ History → CSV export offline: one row per stored reading — 224 rows / 224 stored
+  ✔ History → JSON export offline: complete — 224 rows
+  ✔ History → ZIP bundle export offline: valid archive — annotations.csv,metadata.json,readings.csv
+  ✔ reload: session persisted in IndexedDB, still closed — {"state":"closed","n":224}
+  ✔ file:// run: no uncaught errors
+  ✔ no Web Bluetooth: reported honestly (banner + chip); local data still accessible — Bluetooth: unsupported
+[serve.ps1] documented launcher from the extracted folder
+  ✔ serve.ps1 serves the extracted package on localhost
+  ✔ service worker active; precache holds the complete app shell — sensorlab-2.0.0-dev+1e91019c7e6b: 6 entries
+  ✔ launcher killed + network offline: app reloads from the service-worker cache
+  ✔ record → finalize works with no server and no network — {"id":"77996f84-41ed-4e70-ba96-56420ff79fd8","n":224,"state":"closed"}
+  ✔ launcher/SW run: no uncaught errors
+  ✔ zero requests to any non-loopback host across all runs
+package: sensorlab-2.0.0-dev.zip (SensorLab 2.0.0-dev+1e91019c7e6b)
+package smoke: OK
+exit=0

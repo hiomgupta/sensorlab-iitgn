@@ -1,0 +1,12 @@
+# 2026-10-13T23:32:49.881Z $ npm run firmware:compile
+
+> sensorlab@2.0.0-dev firmware:compile
+> node test/firmware/compile-sketch.mjs
+
+arduino-cli  Version: 1.5.2-rc.1 Commit: fef6e48df Date: 2026-07-23T11:13:25Z
+ID          Installed Latest Name
+esp32:esp32 3.3.12    3.3.12 esp32
+Sketch uses 603729 bytes (46%) of program storage space. Maximum is 1310720 bytes.
+Global variables use 17828 bytes (5%) of dynamic memory, leaving 309852 bytes for local variables. Maximum is 327680 bytes.
+COMPILED: esp32:esp32:esp32c3
+exit=0

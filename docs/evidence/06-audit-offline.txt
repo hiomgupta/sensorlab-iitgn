@@ -1,0 +1,8 @@
+# 2026-10-13T23:33:00.699Z $ npm run audit:offline
+
+> sensorlab@2.0.0-dev audit:offline
+> node scripts/audit-offline.mjs
+
+
+offline audit: OK (9 files in dist/; CSP: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none')
+exit=0

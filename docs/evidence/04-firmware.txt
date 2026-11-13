@@ -1,0 +1,13 @@
+# 2026-10-13T23:32:48.280Z $ npm run test:firmware
+
+> sensorlab@2.0.0-dev test:firmware
+> node test/firmware/run-c-tests.mjs
+
+compiler: C:/MinGW/bin/gcc.exe (gcc.exe (MinGW.org GCC-6.3.0-1) 6.3.0)
+INFO_WORST_BYTES:206
+OK: 0 failure(s), 3 data vectors, 3 control vectors
+OK: INFO_JSON_TYPICAL (204 bytes) parsed by the app's parseDeviceInfo → serial A1B2C3D4E5F6, period 100000 µs, units count/Ω
+OK: INFO_JSON_WORST (206 bytes) parsed by the app's parseDeviceInfo → serial FFFFFFFFFFFF, period 10000000 µs, units count/Ω
+OK: docs/PROTOCOL.md INFO example equals firmware output
+OK: sketch sets DEVICE_OVERRUN per sample from sltp_advance_slot (no persistent latch)
+exit=0

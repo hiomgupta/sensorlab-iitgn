@@ -1,0 +1,88 @@
+{
+  "evidenceClass": "SIMULATED (software pipeline only; demo devices in-page)",
+  "host": {
+    "cpus": "AMD Ryzen 5 5600H with Radeon Graphics         ",
+    "cores": 12,
+    "platform": "win32"
+  },
+  "browser": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "seconds": 30,
+  "results": [
+    {
+      "devices": 1,
+      "hz": 10,
+      "ok": true,
+      "persisted": 604,
+      "unsaved": 0,
+      "receivedSamples": 302,
+      "expectedSamples": 300,
+      "receivedReadingsPerS": 20,
+      "appMissing": 0,
+      "storedEqualsReceived": true,
+      "maxEventLoopLagMs": 6,
+      "pendingAtStop": 2,
+      "sessionState": "COMPLETED"
+    },
+    {
+      "devices": 5,
+      "hz": 20,
+      "ok": true,
+      "persisted": 6050,
+      "unsaved": 0,
+      "receivedSamples": 3025,
+      "expectedSamples": 3001,
+      "receivedReadingsPerS": 202,
+      "appMissing": 0,
+      "storedEqualsReceived": true,
+      "maxEventLoopLagMs": 12,
+      "pendingAtStop": 20,
+      "sessionState": "COMPLETED"
+    },
+    {
+      "devices": 8,
+      "hz": 50,
+      "ok": true,
+      "persisted": 24224,
+      "unsaved": 0,
+      "receivedSamples": 12112,
+      "expectedSamples": 12006,
+      "receivedReadingsPerS": 807,
+      "appMissing": 0,
+      "storedEqualsReceived": true,
+      "maxEventLoopLagMs": 19,
+      "pendingAtStop": 208,
+      "sessionState": "COMPLETED"
+    },
+    {
+      "devices": 8,
+      "hz": 100,
+      "ok": true,
+      "persisted": 48420,
+      "unsaved": 0,
+      "receivedSamples": 24210,
+      "expectedSamples": 24013,
+      "receivedReadingsPerS": 1613,
+      "appMissing": 0,
+      "storedEqualsReceived": true,
+      "maxEventLoopLagMs": 24,
+      "pendingAtStop": 384,
+      "sessionState": "COMPLETED"
+    },
+    {
+      "devices": 8,
+      "hz": 200,
+      "ok": true,
+      "persisted": 77710,
+      "unsaved": 0,
+      "receivedSamples": 38855,
+      "expectedSamples": 48012,
+      "receivedReadingsPerS": 2590,
+      "appMissing": 0,
+      "storedEqualsReceived": true,
+      "maxEventLoopLagMs": 14,
+      "pendingAtStop": 304,
+      "sessionState": "COMPLETED"
+    }
+  ],
+  "at": "2026-10-13T23:38:23.794Z"
+}

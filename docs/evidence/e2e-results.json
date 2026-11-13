@@ -1,0 +1,518 @@
+{
+  "browser": "Chrome/154.0.8037.98",
+  "chromePath": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "startedAt": "2026-10-13T23:33:01.666Z",
+  "checks": [
+    {
+      "name": "app boots from file:// with networking disabled",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Web Bluetooth API present on file:// (secure context)",
+      "ok": true,
+      "detail": "API presence only, NOT a radio test"
+    },
+    {
+      "name": "SIMULATED banner hidden with no devices",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "every [hidden] element is actually not displayed (log panel closed on load)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "3 simulated devices reach STREAMING (only after first valid sample)",
+      "ok": true,
+      "detail": "streaming=3"
+    },
+    {
+      "name": "persistent SIMULATED DATA banner shown",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "recording starts after session header is persisted",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "device reconnects automatically after link loss and resumes STREAMING",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "stop reports every appended reading persisted",
+      "ok": true,
+      "detail": "{\"persisted\":836,\"appended\":836,\"unsaved\":0}"
+    },
+    {
+      "name": "stored readings == received samples × channels (no loss inside the app)",
+      "ok": true,
+      "detail": "stored=836 expected=836"
+    },
+    {
+      "name": "every storage write transaction uses strict durability (as reported by Chrome)",
+      "ok": true,
+      "detail": "31 write transactions: strict"
+    },
+    {
+      "name": "session closed, marked simulated, no corrupt chunks",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "link-loss gap counted for the disconnected device",
+      "ok": true,
+      "detail": "missing=14 gaps=1"
+    },
+    {
+      "name": "annotation stored with press time (not completion time)",
+      "ok": true,
+      "detail": "stored=3.336 captured≈3.341"
+    },
+    {
+      "name": "history view reports the true stored-reading count (gap markers not counted)",
+      "ok": true,
+      "detail": "Chart shows 838 decimated points (min/max per bucket, gaps preserved) from 836 stored readings across 6 series, rendered in 12 ms. Exports always contain every stored reading."
+    },
+    {
+      "name": "CSV export downloaded offline",
+      "ok": true,
+      "detail": "Trial _1_ Ω µε_2026-10-13-23-33-02_2663d2f5.csv"
+    },
+    {
+      "name": "CSV header matches schema sensorlab-csv/1",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "CSV has exactly one row per stored reading",
+      "ok": true,
+      "detail": "rows=836"
+    },
+    {
+      "name": "Unicode units preserved in CSV",
+      "ok": true,
+      "detail": "µε °C Ω V"
+    },
+    {
+      "name": "CSV marks simulated readings",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "filename sanitized",
+      "ok": true,
+      "detail": "Trial _1_ Ω µε_2026-10-13-23-33-02_2663d2f5.csv"
+    },
+    {
+      "name": "JSON export: schema, readings and annotations complete",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "ZIP bundle valid (independent python zipfile check)",
+      "ok": true,
+      "detail": "annotations.csv,metadata.json,readings.csv"
+    },
+    {
+      "name": "Escape closes the dialog",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "hostile BLE name/unit rendered as text, no HTML injection",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "zero requests to any non-local origin (file:// run)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no uncaught page errors (file:// run)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "interrupted session detected on next launch",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "recovery marks session \"recovered\" and is idempotent",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "recovered data readable, no corrupt chunks, not more than was appended",
+      "ok": true,
+      "detail": "persisted=834 appendedBeforeKill≥866"
+    },
+    {
+      "name": "measured loss window at kill (simulated, 1 run) recorded",
+      "ok": true,
+      "detail": "0.177 s between last persisted sample and kill instant"
+    },
+    {
+      "name": "quota error shown prominently while recording (banner + status)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "recording resumes saving after storage recovers; banner clears",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "toasts never block the Record/Stop button (it is the hit target while toasts are shown)",
+      "ok": true,
+      "detail": "{\"toasts\":2,\"isButton\":true}"
+    },
+    {
+      "name": "after transient failure: all appended readings persisted, write errors recorded",
+      "ok": true,
+      "detail": "stored=84 appended=84 writeErrors=1"
+    },
+    {
+      "name": "persistent failure: no false \"saved\"; unsaved count reported to user",
+      "ok": true,
+      "detail": "unsaved=36"
+    },
+    {
+      "name": "unsupported BLE: explanatory banner, app still usable",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "history/export of local data reachable without Bluetooth",
+      "ok": true,
+      "detail": "4 sessions listed"
+    },
+    {
+      "name": "demo mode works without Bluetooth",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "150k-reading session: history view renders (decimated)",
+      "ok": true,
+      "detail": "Chart shows 2664 decimated points (min/max per bucket, gaps preserved) from 150000 stored readings across 2 series, rendered in 52 ms. Exports always contain every stored reading."
+    },
+    {
+      "name": "150k-reading session: CSV export complete",
+      "ok": true,
+      "detail": "rows=150000"
+    },
+    {
+      "name": "service worker installed and active",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "app reloads and runs with network offline and server stopped (served from SW cache)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "zero requests to any non-local origin (HTTP run)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no uncaught page errors (HTTP run)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "confirmation dialog lists devices and channels with units",
+      "ok": true,
+      "detail": "SIM-01 SIMULATEDstreamingstrain (µε), temperature (°C)20 Hz | SIM-02 SIMULATEDstreamingtemperature (°C), resistance (Ω)20 Hz"
+    },
+    {
+      "name": "keep screen awake is enabled by default and explained as best-effort",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "all dialog columns (incl. channels and rate) visible without clipping",
+      "ok": true,
+      "detail": "[true,true,true,true,true]"
+    },
+    {
+      "name": "Start/Cancel reachable without scrolling in a 1100×720 window",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "preflight warnings shown before starting (simulated devices)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "cancelling the confirmation creates no session",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "fatal preflight (no device selected) disables Start",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "RECORDING only after verification; duplicate submissions create one session",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "live chart series are time-ordered after start (no joined pre-/post-reset points)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "keep-awake disabled by the user: never requested, reported honestly",
+      "ok": true,
+      "detail": "{\"ui\":\"not requested\",\"stored\":\"not_requested\"}"
+    },
+    {
+      "name": "persisted startup order: preflight → keep_awake → pipeline_active → startup_verified",
+      "ok": true,
+      "detail": "1,3,4,9"
+    },
+    {
+      "name": "silent device → session DEGRADED with a non-blocking warning naming device and channel",
+      "ok": true,
+      "detail": "Stream problems (recording continues for the other streams): SIM-01 · strain: suspect (last valid 249.5 at 0.8 s, 0.7 s ago); SIM-01 · temperature: suspect (las"
+    },
+    {
+      "name": "other device keeps recording while one is stale",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "stale value shown as \"last …\", not as current",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Record/Stop is the hit target while stale warnings are visible",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "stream resumes → session back to RECORDING",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Stop finalizes and the UI reports successful finalization",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "stale transitions persisted in the saved session",
+      "ok": true,
+      "detail": "{\"state\":\"closed\",\"ev\":2}"
+    },
+    {
+      "name": "startup failure (silent device) shown with Retry/Cancel; not reported as recording",
+      "ok": true,
+      "detail": "Recording did not start: no fresh valid samples within the startup time from sim:SIM0002|0, sim:SIM0002|1. The partial data is kept in Histo"
+    },
+    {
+      "name": "failed startup kept as \"startup_failed\"; keep-awake outcome of the real Wake Lock API recorded",
+      "ok": true,
+      "detail": "[\"active (requested)\",\"active (requested)\"]"
+    },
+    {
+      "name": "Cancel after a failed startup returns to idle",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Bluetooth permission denial gives an actionable message and adds nothing",
+      "ok": true,
+      "detail": "Bluetooth access was denied or blocked (NotAllowedError: User denied the browser permissio"
+    },
+    {
+      "name": "IndexedDB unavailable: prominent banner, Record refuses with an explanation, no dialog",
+      "ok": true,
+      "detail": "Local storage is unavailable (The user denied permission to access the database.). Live vi"
+    },
+    {
+      "name": "keyboard: Tab reaches Record and the focus is visibly outlined",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "keyboard: Enter opens the confirmation with focus in the name field; Escape closes it; focus returns to Record",
+      "ok": true,
+      "detail": "focus after close: recordBtn"
+    },
+    {
+      "name": "real browser freeze/resume (Page Lifecycle) recorded and the ≥5 s timer stall persisted in the session (defect D29)",
+      "ok": true,
+      "detail": "{\"kinds\":[\"freeze\",\"resume\"],\"gaps\":[\"timer_stall:6077\"]}"
+    },
+    {
+      "name": "tab hidden then shown during recording: app_hidden/app_visible persisted and a visibility warning shown",
+      "ok": true,
+      "detail": "This page was hidden for 3 s while recording. Browsers may throttle or"
+    },
+    {
+      "name": "real Wake Lock: released by the browser while hidden, re-acquired when visible, both persisted",
+      "ok": true,
+      "detail": "{\"whileHidden\":\"released\",\"afterReturn\":\"active\",\"reacquisitions\":1,\"persisted\":[\"active\",\"active\",\"released\",\"active\"]}"
+    },
+    {
+      "name": "slow finalization is shown as \"stopping / finalizing\" with Stop disabled (no premature success)",
+      "ok": true,
+      "detail": "{\"state\":\"stopping / finalizing…\",\"disabled\":true}"
+    },
+    {
+      "name": "…then reports successful finalization once all writes completed",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "page reload: completed session is byte-identical (SHA-256 of the stored snapshot) and still \"closed\" (not open/interrupted)",
+      "ok": true,
+      "detail": "hash before 8a290cd7ec16 after 8a290cd7ec16, 190 readings, state closed; banner: 2 recording(s) were interrupted (app closed or crashed while"
+    },
+    {
+      "name": "export failure: explained to the user and no file is written",
+      "ok": true,
+      "detail": "Export failed: readSnapshot failed: UnknownError — simulated disk read error"
+    },
+    {
+      "name": "no uncaught page errors during scenario 9",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "zero non-local requests during scenario 9",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "every control has an accessible name; no ambiguous duplicates with 2 devices (e.g. \"Settings for SIM-01\")",
+      "ok": true,
+      "detail": "{\"unnamed\":[],\"duplicates\":[]}"
+    },
+    {
+      "name": "all dialogs: labelled, focus moves inside, Escape closes, focus returns to the opener",
+      "ok": true,
+      "detail": "[]"
+    },
+    {
+      "name": "modal dialogs make the rest of the page inert (focus cannot land on background controls)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "no live-region announcements during 5 s of steady healthy recording (no per-second chatter)",
+      "ok": true,
+      "detail": "{}"
+    },
+    {
+      "name": "stale stream announced once with device and channel; no repeats while unchanged",
+      "ok": true,
+      "detail": "\"Stream problems: SIM-01 strain stale; SIM-01 temperature stale.\" then 0 repeats in 4 s"
+    },
+    {
+      "name": "recovery announced",
+      "ok": true,
+      "detail": "Recording. All streams are fresh."
+    },
+    {
+      "name": "finalization result announced with the saved-reading count",
+      "ok": true,
+      "detail": "Recording stopped and finalized. 840 readings saved."
+    },
+    {
+      "name": "charts reference a textual/numerical alternative (aria-describedby targets exist)",
+      "ok": true,
+      "detail": "[{\"id\":\"liveChart\",\"ok\":true},{\"id\":\"historyChart\",\"ok\":true}]"
+    },
+    {
+      "name": "History: View/Delete buttons have session-specific accessible names",
+      "ok": true,
+      "detail": "{\"unnamed\":[],\"duplicates\":[]}"
+    },
+    {
+      "name": "History: per-series numerical summary table (chart alternative) lists every series",
+      "ok": true,
+      "detail": "SIM-01 · strainµε1520-2502500.02913.379 | SIM-01 · temperature°C152022.0223.090.02913.379 | SIM-02 · temperature°C268022"
+    },
+    {
+      "name": "text contrast meets WCAG AA (4.5:1, large 3:1) in dark and light themes",
+      "ok": true,
+      "detail": "{\"darkBad\":[],\"lightBad\":[]}"
+    },
+    {
+      "name": "header write failure → START_FAILED shown in the dialog (Cancel button variant)",
+      "ok": true,
+      "detail": "START_FAILED: \"Recording did not start: the session could not be saved (createSession failed: QuotaExceededError). Nothing was recorded.\" fatal=\"\" events=keep_awake,startup_failed,keep_awake,session_state→START_FAILED visible=visible"
+    },
+    {
+      "name": "after a failed start closed with the Cancel button, the next Record starts normally",
+      "ok": true,
+      "detail": "RECORDING: "
+    },
+    {
+      "name": "header write failure → START_FAILED shown in the dialog (Escape key variant)",
+      "ok": true,
+      "detail": "START_FAILED: \"Recording did not start: the session could not be saved (createSession failed: QuotaExceededError). Nothing was recorded.\" fatal=\"\" events=keep_awake,startup_failed,keep_awake,session_state→START_FAILED visible=visible"
+    },
+    {
+      "name": "after a failed start closed with the Escape key, the next Record starts normally",
+      "ok": true,
+      "detail": "RECORDING: "
+    },
+    {
+      "name": "no horizontal scroll at 390 px; device panel visible",
+      "ok": true,
+      "detail": "{\"overflow\":0,\"sidebar\":300.53125}"
+    },
+    {
+      "name": "device settings dialog reachable at 390 px",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "measurements": {
+    "fileLoadMs": 216,
+    "fileRunRequests": 4,
+    "fileRunConsoleErrors": [],
+    "crashLossWindowS": {
+      "lossWindowS": 0.17720000001788172,
+      "killAtRelS": 4.346400000005961,
+      "lastPersistedRelS": 4.169199999988079,
+      "note": "single SIMULATED run on this host; flush interval 250 ms; includes up to one flush interval plus kill latency. Not a guarantee."
+    },
+    "largeSession": {
+      "readings": 150000,
+      "idbWriteMs": 163,
+      "historyViewMs": 113,
+      "csvExportToFileMs": 462,
+      "note": "headless Chrome on this host; indicative only"
+    },
+    "wakeLockHeadlessChrome": [
+      {
+        "state": "active",
+        "reason": "requested"
+      },
+      {
+        "state": "active",
+        "reason": "requested"
+      }
+    ]
+  },
+  "finishedAt": "2026-10-13T23:34:19.043Z",
+  "passed": 96,
+  "failed": 0
+}

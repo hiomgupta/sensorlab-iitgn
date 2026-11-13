@@ -1,0 +1,24 @@
+# CI: lint, unit tests, firmware serialization tests, build, offline audit, E2E (headless Chrome).
+# NOTE: authored locally; it has not been run on GitHub Actions as part of this change.
+name: ci
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run test:firmware
+      - run: npm run build
+      - run: npm run audit:offline
+      - run: npm run test:e2e
+        env:
+          CHROME_PATH: /usr/bin/google-chrome

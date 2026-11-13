@@ -1,0 +1,127 @@
+# 2026-10-13T23:34:19.075Z $ npm run test:e2e
+
+> sensorlab@2.0.0-dev test:e2e
+> node test/e2e/run-e2e.mjs
+
+
+Chrome: C:/Program Files/Google/Chrome/Application/chrome.exe
+Browser: Chrome/154.0.8037.98
+
+[1] file:// (no server), network offline
+  ✔ app boots from file:// with networking disabled
+  ✔ Web Bluetooth API present on file:// (secure context) — API presence only, NOT a radio test
+  ✔ SIMULATED banner hidden with no devices
+  ✔ every [hidden] element is actually not displayed (log panel closed on load)
+  ✔ 3 simulated devices reach STREAMING (only after first valid sample) — streaming=3
+  ✔ persistent SIMULATED DATA banner shown
+  ✔ recording starts after session header is persisted
+  ✔ device reconnects automatically after link loss and resumes STREAMING
+  ✔ stop reports every appended reading persisted — {"persisted":824,"appended":824,"unsaved":0}
+  ✔ stored readings == received samples × channels (no loss inside the app) — stored=824 expected=824
+  ✔ every storage write transaction uses strict durability (as reported by Chrome) — 31 write transactions: strict
+  ✔ session closed, marked simulated, no corrupt chunks
+  ✔ link-loss gap counted for the disconnected device — missing=11 gaps=1
+  ✔ annotation stored with press time (not completion time) — stored=3.353 captured≈3.358
+  ✔ history view reports the true stored-reading count (gap markers not counted) — Chart shows 826 decimated points (min/max per bucket, gaps preserved) from 824 stored readings across 6 series, rendered in 11 ms. Exports always contain every stored reading.
+  ✔ CSV export downloaded offline — Trial _1_ Ω µε_2026-10-13-23-34-20_be4aa8f8.csv
+  ✔ CSV header matches schema sensorlab-csv/1
+  ✔ CSV has exactly one row per stored reading — rows=824
+  ✔ Unicode units preserved in CSV — µε °C Ω V
+  ✔ CSV marks simulated readings
+  ✔ filename sanitized — Trial _1_ Ω µε_2026-10-13-23-34-20_be4aa8f8.csv
+  ✔ JSON export: schema, readings and annotations complete
+  ✔ ZIP bundle valid (independent python zipfile check) — annotations.csv,metadata.json,readings.csv
+  ✔ Escape closes the dialog
+  ✔ hostile BLE name/unit rendered as text, no HTML injection
+  ✔ zero requests to any non-local origin (file:// run)
+  ✔ no uncaught page errors (file:// run)
+
+[2] forced browser kill during recording → interrupted-session recovery
+  ✔ interrupted session detected on next launch
+  ✔ recovery marks session "recovered" and is idempotent
+  ✔ recovered data readable, no corrupt chunks, not more than was appended — persisted=840 appendedBeforeKill≥866
+  ✔ measured loss window at kill (simulated, 1 run) recorded — 0.139 s between last persisted sample and kill instant
+
+[3] storage write failure (quota) during recording
+  ✔ quota error shown prominently while recording (banner + status)
+  ✔ recording resumes saving after storage recovers; banner clears
+  ✔ toasts never block the Record/Stop button (it is the hit target while toasts are shown) — {"toasts":2,"isButton":true}
+  ✔ after transient failure: all appended readings persisted, write errors recorded — stored=84 appended=84 writeErrors=1
+  ✔ persistent failure: no false "saved"; unsaved count reported to user — unsaved=38
+
+[4] browser without Web Bluetooth
+  ✔ unsupported BLE: explanatory banner, app still usable
+  ✔ history/export of local data reachable without Bluetooth — 4 sessions listed
+  ✔ demo mode works without Bluetooth
+
+[5] large session (>100k readings): history render + export
+  ✔ 150k-reading session: history view renders (decimated) — Chart shows 2664 decimated points (min/max per bucket, gaps preserved) from 150000 stored readings across 2 series, rendered in 61 ms. Exports always contain every stored reading.
+  ✔ 150k-reading session: CSV export complete — rows=150000
+
+[6] HTTP(S)-style hosting: first load online, then reload with network offline (service worker)
+  ✔ service worker installed and active
+  ✔ app reloads and runs with network offline and server stopped (served from SW cache)
+  ✔ zero requests to any non-local origin (HTTP run)
+  ✔ no uncaught page errors (HTTP run)
+
+[8] recording lifecycle: confirmation, keep-awake, preflight, verified startup, stale streams, startup failure
+  ✔ confirmation dialog lists devices and channels with units — SIM-01 SIMULATEDstreamingstrain (µε), temperature (°C)20 Hz | SIM-02 SIMULATEDstreamingtemperature (°C), resistance (Ω)20 Hz
+  ✔ keep screen awake is enabled by default and explained as best-effort
+  ✔ all dialog columns (incl. channels and rate) visible without clipping — [true,true,true,true,true]
+  ✔ Start/Cancel reachable without scrolling in a 1100×720 window
+  ✔ preflight warnings shown before starting (simulated devices)
+  ✔ cancelling the confirmation creates no session
+  ✔ fatal preflight (no device selected) disables Start
+  ✔ RECORDING only after verification; duplicate submissions create one session
+  ✔ live chart series are time-ordered after start (no joined pre-/post-reset points)
+  ✔ keep-awake disabled by the user: never requested, reported honestly — {"ui":"not requested","stored":"not_requested"}
+  ✔ persisted startup order: preflight → keep_awake → pipeline_active → startup_verified — 1,3,4,9
+  ✔ silent device → session DEGRADED with a non-blocking warning naming device and channel — Stream problems (recording continues for the other streams): SIM-01 · strain: suspect (last valid 249.5 at 0.8 s, 0.7 s ago); SIM-01 · temperature: suspect (las
+  ✔ other device keeps recording while one is stale
+  ✔ stale value shown as "last …", not as current
+  ✔ Record/Stop is the hit target while stale warnings are visible
+  ✔ stream resumes → session back to RECORDING
+  ✔ Stop finalizes and the UI reports successful finalization
+  ✔ stale transitions persisted in the saved session — {"state":"closed","ev":2}
+  ✔ startup failure (silent device) shown with Retry/Cancel; not reported as recording — Recording did not start: no fresh valid samples within the startup time from sim:SIM0002|0, sim:SIM0002|1. The partial data is kept in Histo
+  ✔ failed startup kept as "startup_failed"; keep-awake outcome of the real Wake Lock API recorded — ["active (requested)","active (requested)"]
+  ✔ Cancel after a failed startup returns to idle
+
+[9] permission denial, IndexedDB unavailable, export failure, slow finalization, reload, keyboard, freeze/resume
+  ✔ Bluetooth permission denial gives an actionable message and adds nothing — Bluetooth access was denied or blocked (NotAllowedError: User denied the browser permissio
+  ✔ IndexedDB unavailable: prominent banner, Record refuses with an explanation, no dialog — Local storage is unavailable (The user denied permission to access the database.). Live vi
+  ✔ keyboard: Tab reaches Record and the focus is visibly outlined
+  ✔ keyboard: Enter opens the confirmation with focus in the name field; Escape closes it; focus returns to Record — focus after close: recordBtn
+  ✔ real browser freeze/resume (Page Lifecycle) recorded and the ≥5 s timer stall persisted in the session (defect D29) — {"kinds":["freeze","resume"],"gaps":["timer_stall:6079"]}
+  ✔ tab hidden then shown during recording: app_hidden/app_visible persisted and a visibility warning shown — This page was hidden for 3 s while recording. Browsers may throttle or
+  ✔ real Wake Lock: released by the browser while hidden, re-acquired when visible, both persisted — {"whileHidden":"released","afterReturn":"active","reacquisitions":1,"persisted":["active","active","released","active"]}
+  ✔ slow finalization is shown as "stopping / finalizing" with Stop disabled (no premature success) — {"state":"stopping / finalizing…","disabled":true}
+  ✔ …then reports successful finalization once all writes completed
+  ✔ page reload: completed session is byte-identical (SHA-256 of the stored snapshot) and still "closed" (not open/interrupted) — hash before 3ec2ba1cd519 after 3ec2ba1cd519, 188 readings, state closed; banner: 2 recording(s) were interrupted (app closed or crashed while
+  ✔ export failure: explained to the user and no file is written — Export failed: readSnapshot failed: UnknownError — simulated disk read error
+  ✔ no uncaught page errors during scenario 9
+  ✔ zero non-local requests during scenario 9
+
+[10] accessibility: names, dialogs, focus, live regions, chart alternatives, contrast
+  ✔ every control has an accessible name; no ambiguous duplicates with 2 devices (e.g. "Settings for SIM-01") — {"unnamed":[],"duplicates":[]}
+  ✔ all dialogs: labelled, focus moves inside, Escape closes, focus returns to the opener — []
+  ✔ modal dialogs make the rest of the page inert (focus cannot land on background controls)
+  ✔ no live-region announcements during 5 s of steady healthy recording (no per-second chatter) — {}
+  ✔ stale stream announced once with device and channel; no repeats while unchanged — "Stream problems: SIM-01 strain stale; SIM-01 temperature stale." then 0 repeats in 4 s
+  ✔ recovery announced — Recording. All streams are fresh.
+  ✔ finalization result announced with the saved-reading count — Recording stopped and finalized. 840 readings saved.
+  ✔ charts reference a textual/numerical alternative (aria-describedby targets exist) — [{"id":"liveChart","ok":true},{"id":"historyChart","ok":true}]
+  ✔ History: View/Delete buttons have session-specific accessible names — {"unnamed":[],"duplicates":[]}
+  ✔ History: per-series numerical summary table (chart alternative) lists every series — SIM-01 · strainµε1520-2502500.04513.395 | SIM-01 · temperature°C152022.0223.090.04513.395 | SIM-02 · temperature°C268022
+  ✔ text contrast meets WCAG AA (4.5:1, large 3:1) in dark and light themes — {"darkBad":[],"lightBad":[]}
+  ✔ header write failure → START_FAILED shown in the dialog (Cancel button variant) — START_FAILED: "Recording did not start: the session could not be saved (createSession failed: QuotaExceededError). Nothing was recorded." fatal="" events=keep_awake,startup_failed,keep_awake,session_state→START_FAILED visible=visible
+  ✔ after a failed start closed with the Cancel button, the next Record starts normally — RECORDING: 
+  ✔ header write failure → START_FAILED shown in the dialog (Escape key variant) — START_FAILED: "Recording did not start: the session could not be saved (createSession failed: QuotaExceededError). Nothing was recorded." fatal="" events=keep_awake,startup_failed,keep_awake,session_state→START_FAILED visible=visible
+  ✔ after a failed start closed with the Escape key, the next Record starts normally — RECORDING: 
+
+[7] narrow (390 px) layout
+  ✔ no horizontal scroll at 390 px; device panel visible — {"overflow":0,"sidebar":300.53125}
+  ✔ device settings dialog reachable at 390 px
+
+E2E: 96 passed, 0 failed (results in test/e2e/results.json)
+exit=0

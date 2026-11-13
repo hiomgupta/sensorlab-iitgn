@@ -1,0 +1,11 @@
+# 2026-10-13T23:38:40.807Z $ npm run audit:repo
+
+> sensorlab@2.0.0-dev audit:repo
+> node scripts/audit-repo.mjs
+
+ℹ owner file present (not part of the code deliverable; decide whether to track it): sensorlab report.pdf (701 KB)
+ℹ staged deletions: 7 (js/app.js, js/auth-manager.js, js/ble-manager.js, js/chart-manager.js, js/cloud-store.js, js/data-store.js, js/firebase-config.js); legacy 1.x files replaced by src/ (content preserved in commit 25dbe42)
+ℹ 177 files would be part of a commit of this tree
+
+repo audit: OK (no secrets, no generated artifacts, required files present, ignore rules present)
+exit=0
