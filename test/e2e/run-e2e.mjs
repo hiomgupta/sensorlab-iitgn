@@ -123,7 +123,16 @@ console.log(`Browser: ${results.browser}\n\n[1] file:// (no server), network off
     await waitFor(() => st(page, () => !!window.__sensorlab), 10000);
     results.measurements.fileLoadMs = Date.now() - t0;
     check('app boots from file:// with networking disabled', await st(page, () => !!window.__sensorlab && document.getElementById('appVersion').textContent.startsWith('v')));
-    check('Web Bluetooth API present on file:// (secure context)', await st(page, () => isSecureContext && !!navigator.bluetooth), 'API presence only, NOT a radio test');
+    const bluetoothStatus = await st(page, () => ({
+        secure: isSecureContext,
+        supported: !!navigator.bluetooth,
+        chip: document.getElementById('bleChip').textContent,
+        bannerHidden: document.getElementById('bleBanner').hidden,
+    }));
+    const bluetoothReported = bluetoothStatus.supported
+        ? /^Bluetooth: (available|adapter off\/unavailable)$/.test(bluetoothStatus.chip) && bluetoothStatus.bannerHidden
+        : bluetoothStatus.chip === 'Bluetooth: unsupported' && !bluetoothStatus.bannerHidden;
+    check('Web Bluetooth capability is reflected honestly on file://', bluetoothStatus.secure && bluetoothReported, JSON.stringify(bluetoothStatus));
     check('SIMULATED banner hidden with no devices', await st(page, () => document.getElementById('simBanner').hidden));
     check('every [hidden] element is actually not displayed (log panel closed on load)', await st(page, () => [...document.querySelectorAll('[hidden]')].every(e => getComputedStyle(e).display === 'none')));
 
