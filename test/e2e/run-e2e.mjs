@@ -123,7 +123,17 @@ console.log(`Browser: ${results.browser}\n\n[1] file:// (no server), network off
     await waitFor(() => st(page, () => !!window.__sensorlab), 10000);
     results.measurements.fileLoadMs = Date.now() - t0;
     check('app boots from file:// with networking disabled', await st(page, () => !!window.__sensorlab && document.getElementById('appVersion').textContent.startsWith('v')));
-    check('Web Bluetooth API present on file:// (secure context)', await st(page, () => isSecureContext && !!navigator.bluetooth), 'API presence only, NOT a radio test');
+    await page.waitForFunction(() => document.getElementById('bleChip').textContent !== 'Bluetooth: checking availability', { timeout: 5000 });
+    const bluetoothStatus = await st(page, () => ({
+        secure: isSecureContext,
+        supported: !!navigator.bluetooth,
+        chip: document.getElementById('bleChip').textContent,
+        bannerHidden: document.getElementById('bleBanner').hidden,
+    }));
+    const bluetoothReported = bluetoothStatus.supported
+        ? /^Bluetooth: (available|adapter off\/unavailable|supported \(availability unknown\))$/.test(bluetoothStatus.chip) && bluetoothStatus.bannerHidden
+        : bluetoothStatus.chip === 'Bluetooth: unsupported' && !bluetoothStatus.bannerHidden;
+    check('Web Bluetooth capability is reflected honestly on file://', bluetoothStatus.secure && bluetoothReported, JSON.stringify(bluetoothStatus));
     check('SIMULATED banner hidden with no devices', await st(page, () => document.getElementById('simBanner').hidden));
     check('every [hidden] element is actually not displayed (log panel closed on load)', await st(page, () => [...document.querySelectorAll('[hidden]')].every(e => getComputedStyle(e).display === 'none')));
 
@@ -361,6 +371,35 @@ console.log('\n[4] browser without Web Bluetooth');
     check('history/export of local data reachable without Bluetooth', listed >= 3, `${listed} sessions listed`);
     await page.keyboard.press('Escape');
     check('demo mode works without Bluetooth', (await startDemo(page, 1, 10)) === 1);
+    await page.close();
+}
+
+console.log('\n[4b] optional Bluetooth availability query');
+for (const availability of ['missing', 'rejected', 'off']) {
+    const page = await browser.newPage();
+    const a = audit(page, ['file://', 'data:', 'blob:']);
+    await page.evaluateOnNewDocument(mode => {
+        const bluetooth = {
+            async requestDevice() { throw new DOMException('No device selected', 'NotFoundError'); },
+        };
+        if (mode === 'rejected') bluetooth.getAvailability = async () => { throw new DOMException('Availability query denied', 'SecurityError'); };
+        if (mode === 'off') bluetooth.getAvailability = async () => false;
+        Object.defineProperty(Navigator.prototype, 'bluetooth', { get: () => bluetooth, configurable: true });
+    }, availability);
+    await page.goto(FILE_URL, { waitUntil: 'load' });
+    await page.waitForFunction(() => !!window.__sensorlab);
+    const status = await st(page, () => ({
+        chip: document.getElementById('bleChip').textContent,
+        bannerHidden: document.getElementById('bleBanner').hidden,
+        log: document.getElementById('logBody').textContent,
+    }));
+    const expected = availability === 'off' ? 'Bluetooth: adapter off/unavailable' : 'Bluetooth: supported (availability unknown)';
+    check(`${availability} availability query is reported without disabling Bluetooth`, status.chip === expected && status.bannerHidden, status.chip);
+    if (availability === 'rejected') check('availability query rejection is explained in the log', /Bluetooth availability query failed: Availability query denied/.test(status.log));
+    await page.click('#addDeviceBtn');
+    await page.click('#connectSltp');
+    check(`device chooser remains reachable with ${availability} availability`, await st(page, () => document.getElementById('addError').textContent === 'No device selected.'));
+    check(`no uncaught page errors with ${availability} availability`, a.errors.length === 0, a.errors.join('; '));
     await page.close();
 }
 
@@ -695,7 +734,11 @@ console.log('\n[10] accessibility: names, dialogs, focus, live regions, chart al
     check('modal dialogs make the rest of the page inert (focus cannot land on background controls)', modal);
 
     // live regions: quiet during a steady healthy recording
-    await st(page, async () => { const { controller, service } = window.__sensorlab; await controller.start({ name: 'a11y', include: service.list().map(e => e.handle), keepAwake: false }); });
+    const a11ySessionId = await st(page, async () => {
+        const { controller, service } = window.__sensorlab;
+        await controller.start({ name: 'a11y', include: service.list().map(e => e.handle), keepAwake: false });
+        return service.sessionId;
+    });
     await waitFor(() => st(page, () => window.__sensorlab.controller.state === 'RECORDING'), 10000);
     await sleep(1500);
     const quiet = await st(page, async () => {
@@ -721,18 +764,31 @@ console.log('\n[10] accessibility: names, dialogs, focus, live regions, chart al
     await page.click('#recordBtn');
     const fin = await waitFor(() => st(page, () => /finalized/i.test(document.getElementById('srAnnounce').textContent) ? document.getElementById('srAnnounce').textContent : null), 10000);
     check('finalization result announced with the saved-reading count', !!fin && /\d+ readings saved/.test(fin), fin);
+    const finalizedA11ySession = await st(page, async (id) => {
+        const sessions = await window.__sensorlab.repo.listSessions();
+        const session = sessions.find(s => s.sessionId === id);
+        return session ? { name: session.name, state: session.state } : null;
+    }, a11ySessionId);
+    check('accessibility test session is finalized in storage before History opens', finalizedA11ySession?.name === 'a11y' && finalizedA11ySession.state === 'closed', JSON.stringify(finalizedA11ySession));
 
     // chart text alternatives
     const alt = await st(page, () => [...document.querySelectorAll('canvas')].map(c => ({ id: c.id, ok: (c.getAttribute('aria-describedby') || '').split(' ').filter(Boolean).every(i => document.getElementById(i)) && !!c.getAttribute('aria-describedby') })));
     check('charts reference a textual/numerical alternative (aria-describedby targets exist)', alt.every(a => a.ok), JSON.stringify(alt));
     await page.click('#historyBtn');
-    await page.waitForSelector('#histBody tr');
+    const a11yRowFound = await waitFor(() => st(page, () => [...document.querySelectorAll('#histBody tr')].some(tr => tr.textContent.includes('a11y'))), 5000);
+    check('History eventually lists the accessibility test session', !!a11yRowFound, `session=${a11ySessionId}`);
     const names = nameIssues(await ax());
     check('History: View/Delete buttons have session-specific accessible names', names.duplicates.length === 0 && names.unnamed.length === 0, JSON.stringify(names));
-    await st(page, () => [...document.querySelectorAll('#histBody tr')].find(tr => tr.textContent.includes('a11y')).querySelector('button[aria-label^="View"]').click());
-    await waitFor(() => st(page, () => document.querySelectorAll('#detailSeriesBody tr').length), 5000);
-    const series = await st(page, () => [...document.querySelectorAll('#detailSeriesBody tr')].map(tr => tr.textContent));
-    check('History: per-series numerical summary table (chart alternative) lists every series', series.length === 4, series.join(' | ').slice(0, 120));
+    const openedA11ySession = a11yRowFound && await st(page, () => {
+        const row = [...document.querySelectorAll('#histBody tr')].find(tr => tr.textContent.includes('a11y'));
+        const view = row?.querySelector('button[aria-label^="View session"]');
+        if (!view) return false;
+        view.click();
+        return true;
+    });
+    const detailReady = openedA11ySession && await waitFor(() => st(page, () => document.querySelectorAll('#detailSeriesBody tr').length > 0), 5000);
+    const series = detailReady ? await st(page, () => [...document.querySelectorAll('#detailSeriesBody tr')].map(tr => tr.textContent)) : [];
+    check('History: per-series numerical summary table (chart alternative) lists every series', !!detailReady && series.length === 4, series.join(' | ').slice(0, 120) || 'accessibility test session detail did not open');
     await page.keyboard.press('Escape');
 
     // WCAG AA text contrast, both themes

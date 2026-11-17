@@ -72,3 +72,30 @@ test('check-export rejects tampering: duplicate row, unflagged jump, unflagged b
     const res = await checkCsv(write('ok2.csv', lines.join('\r\n')));
     assert.deepEqual(compareWithJson(res, buildJson(bad, { app: { version: 't' }, exportedWall: 'E' })).map(c => c.ok), [false]);
 });
+
+test('check-export does not treat interleaved generic host counters as device sample sequences', async () => {
+    const snap = snapshot();
+    const cols = snap.chunks[0].cols;
+    for (let i = 0; i < snap.chunks[0].n; i++) {
+        cols.q[i] = i;
+        cols.t[i] = null;
+        cols.f[i] = Q.HOST_TIME_ONLY;
+    }
+    const device = snap.chunks[0].dict[0];
+    snap.session.devices[device].protocol = 'generic-gatt/1';
+    snap.session.quality[device].stream = { hostTimeOnly: true, missing: 0 };
+    const res = await checkCsv(write('generic.csv', buildCsvParts(snap).parts.join('')));
+    assert.deepEqual(res.findings, []);
+    assert.equal(res.legacyRows, snap.chunks[0].n);
+    assert.ok(res.streams.every(stream => stream.hostTimeOnly && stream.missing === null && stream.longestGap === null));
+    const comparison = compareWithJson(res, buildJson(snap));
+    assert.equal(comparison[0].ok, true);
+    assert.match(comparison[0].note, /cannot be measured/);
+    snap.session.quality[device].stream.hostTimeOnly = false;
+    assert.equal(compareWithJson(res, buildJson(snap))[0].ok, false, 'mismatched timing provenance must not pass');
+    cols.t[0] = 100;
+    assert.match((await checkCsv(write('generic-device-time.csv', buildCsvParts(snap).parts.join('')))).findings.join('\n'), /host-time-only row contains a device timestamp/);
+    cols.t[0] = null;
+    cols.f[0] = 0;
+    assert.match((await checkCsv(write('generic-mixed.csv', buildCsvParts(snap).parts.join('')))).findings.join('\n'), /mixed device-sequence and host-time-only rows/);
+});

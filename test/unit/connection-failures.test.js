@@ -8,6 +8,7 @@ import { WebBluetoothTransport } from '../../src/transport/web-bluetooth.js';
 import { AcquisitionService } from '../../src/acquisition/acquisition-service.js';
 import { STATES } from '../../src/acquisition/device-connection.js';
 import { FakePeripheral, installFakeNavigatorBluetooth } from '../helpers/fake-web-bluetooth.js';
+import { UUIDS } from '../../src/protocol/sltp.js';
 
 async function one(setup = () => {}, cfg = {}) {
     const clock = new ManualClock();
@@ -63,4 +64,61 @@ test('repeated link loss: listeners never accumulate across reconnects', async (
     }
     assert.equal(e.conn.counters.reconnects, 5);
     assert.equal(p.totalListeners(), 1, 'one live listener after 5 reconnects');
+});
+
+test('driver selects characteristic write mode, supports older APIs, and never retries a failed command', async () => {
+    for (const spec of [
+        { properties: { write: true }, expected: 'response' },
+        { properties: { write: false, writeWithoutResponse: true }, expected: 'no-response' },
+        { properties: { write: true, writeWithoutResponse: true }, expected: 'response' },
+        { properties: { write: true }, legacy: true, expected: 'legacy' },
+        { properties: { writeWithoutResponse: true }, legacy: true, expected: 'legacy' },
+        { properties: { read: true }, expected: null },
+        { properties: { writeWithoutResponse: true }, missingNoResponse: true, expected: null },
+        { properties: { write: true, writeWithoutResponse: true }, reject: true, expected: 'response' },
+    ]) {
+        const clock = new ManualClock();
+        const peripheral = new FakePeripheral({ clock });
+        peripheral.chars[UUIDS.control] = spec.properties;
+        installFakeNavigatorBluetooth([peripheral]);
+        const device = await new WebBluetoothTransport({ clock }).requestDevice({});
+        await device.connect();
+        const characteristic = await device.getCharacteristic(UUIDS.service, UUIDS.control);
+        const raw = peripheral.liveChars.at(-1);
+        const calls = [];
+        const write = mode => async bytes => {
+            calls.push([mode, [...bytes]]);
+            if (spec.reject) throw new DOMException('Write denied', 'NotAllowedError');
+        };
+        raw.writeValueWithResponse = spec.legacy ? undefined : write('response');
+        raw.writeValueWithoutResponse = spec.legacy || spec.missingNoResponse ? undefined : write('no-response');
+        raw.writeValue = spec.legacy ? write('legacy') : undefined;
+        try {
+            if (spec.reject) await assert.rejects(characteristic.write(Uint8Array.of(1, 2)), { name: 'NotAllowedError' });
+            else if (spec.expected === null) await assert.rejects(characteristic.write(Uint8Array.of(1, 2)), /writ/i);
+            else await characteristic.write(Uint8Array.of(1, 2));
+            assert.deepEqual(calls, spec.expected === null ? [] : [[spec.expected, [1, 2]]], JSON.stringify(spec));
+        } finally { device.disconnect(); device.dispose(); }
+    }
+});
+
+test('Bluetooth availability distinguishes unsupported, unknown, off, available and rejected queries', async t => {
+    const original = Object.getOwnPropertyDescriptor(globalThis, 'navigator');
+    t.after(() => {
+        if (original) Object.defineProperty(globalThis, 'navigator', original);
+        else delete globalThis.navigator;
+    });
+    const bluetooth = installFakeNavigatorBluetooth([]);
+    delete bluetooth.getAvailability;
+    assert.equal(WebBluetoothTransport.isSupported(), true);
+    assert.equal(await WebBluetoothTransport.isAvailable(), null);
+    await assert.rejects(new WebBluetoothTransport().requestDevice({}), { name: 'NotFoundError' });
+    bluetooth.getAvailability = async () => false;
+    assert.equal(await WebBluetoothTransport.isAvailable(), false);
+    bluetooth.getAvailability = async () => true;
+    assert.equal(await WebBluetoothTransport.isAvailable(), true);
+    bluetooth.getAvailability = async () => { throw new DOMException('Availability query denied', 'SecurityError'); };
+    await assert.rejects(WebBluetoothTransport.isAvailable(), { name: 'SecurityError' });
+    Object.defineProperty(globalThis, 'navigator', { value: {}, configurable: true });
+    assert.equal(await WebBluetoothTransport.isAvailable(), false);
 });

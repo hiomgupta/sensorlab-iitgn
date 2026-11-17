@@ -1,3 +1,4 @@
+import 'fake-indexeddb/auto';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { AcquisitionService } from '../../src/acquisition/acquisition-service.js';
@@ -8,6 +9,11 @@ import { expectedIntervalMs } from '../../src/acquisition/stream-health.js';
 import { GenericGattAdapter, UartFramer } from '../../src/protocol/adapters.js';
 import { MAX_PROFILE_BYTES, parseDeviceProfileJson, stringifyDeviceProfile, validateDeviceProfile } from '../../src/protocol/device-profile.js';
 import { ManualClock } from '../../src/util/clock.js';
+import { SessionController } from '../../src/acquisition/session-controller.js';
+import { IdbRepository } from '../../src/storage/idb-repository.js';
+import { Recorder } from '../../src/storage/recorder.js';
+import { buildCsvParts, buildJson, CSV_COLUMNS, integrityReport, iterateReadings, parseCsv, parseExportJson } from '../../src/export/export.js';
+import { Q } from '../../src/acquisition/quality.js';
 
 const profileInput = {
     schema: 'sensorlab-device-profile/1',
@@ -144,6 +150,96 @@ test('multiple generic GATT sources feed independent channels through acquisitio
     assert.deepEqual(device.writes, [[1, 2]]);
     await service.removeDevice(entry.handle);
     assert.equal(device.callbacks.size, 0);
+});
+
+test('multiple generic devices retain distinct identities through verified recording and export', async t => {
+    const profile = validateDeviceProfile({
+        ...profileInput,
+        sampling: { intervalMs: 100 },
+        characteristics: [profileInput.characteristics[2]],
+        channels: [{ ...profileInput.channels[2], channelId: 0 }],
+    }).profile;
+    const clock = new ManualClock();
+    const repo = new IdbRepository({ dbName: 'generic-recording' });
+    const service = new AcquisitionService({ clock });
+    service.recorder = new Recorder({ repo, clock, locks: null, persist: async () => null, newId: () => 'generic-session' });
+    const controller = new SessionController({ service, clock });
+    t.after(async () => { await service.shutdown(); repo.close(); });
+    const expected = [];
+    service.addSink((reading, entry) => { if (service.isRecorded(entry)) expected.push({ ...reading }); });
+    const devices = [77, 123].map((value, i) => {
+        const device = new FakeGattDevice(profile);
+        device.transportId += '-' + i;
+        device.characteristics.get(String(profile.characteristics[0].characteristicUuid)).read = async () => Uint8Array.of(value);
+        return device;
+    });
+    const entries = devices.map(device => service.addDevice(device, profile));
+    await clock.advance(10);
+    assert.deepEqual(entries.map(entry => entry.deviceId), devices.map(device => device.transportId));
+    const starting = controller.start({ name: 'Two generic sensors', include: entries.map(entry => entry.handle), keepAwake: false });
+    await clock.advance(1000);
+    const started = await starting;
+    assert.equal(started.ok, true, JSON.stringify(started));
+    assert.equal(controller.state, 'RECORDING');
+    await clock.advance(1000);
+    const stopping = controller.stop();
+    await clock.advance(100);
+    const summary = await stopping;
+    assert.equal(summary.ok, true);
+    const snapshot = await repo.readSnapshot(started.sessionId);
+    const stored = [...iterateReadings(snapshot)];
+    assert.ok(stored.length > 10);
+    assert.deepEqual(stored, expected);
+    assert.equal(summary.persisted, expected.length);
+    for (const [i, device] of devices.entries()) {
+        const readings = stored.filter(reading => reading.deviceId === device.transportId);
+        assert.ok(readings.length > 5);
+        assert.ok(readings.every(reading => reading.value === [77, 123][i] && reading.devUs === null && (reading.flags & Q.HOST_TIME_ONLY)));
+        const metadata = snapshot.session.devices[device.transportId];
+        assert.equal(metadata.protocol, 'generic-gatt/1');
+        assert.equal(snapshot.session.quality[device.transportId].stream.hostTimeOnly, true);
+    }
+    const csv = parseCsv(buildCsvParts(snapshot).parts.join(''));
+    assert.equal(csv.length - 1, stored.length);
+    const deviceColumn = CSV_COLUMNS.indexOf('device_id');
+    const valueColumn = CSV_COLUMNS.indexOf('value');
+    assert.deepEqual(csv.slice(1).map(row => [row[deviceColumn], Number(row[valueColumn])]), stored.map(reading => [reading.deviceId, reading.value]));
+    assert.ok(integrityReport(snapshot).warnings.some(warning => /sample loss cannot be detected/.test(warning)));
+    const imported = parseExportJson(buildJson(snapshot));
+    assert.equal(imported.ok, true, imported.error);
+    assert.deepEqual([...iterateReadings(imported.snapshot)], stored);
+});
+
+test('reconnection discards incomplete generic frames and ignores old subscription callbacks', async t => {
+    for (const spec of [
+        { framing: { type: 'newline' }, decoder: 'text-float', before: new TextEncoder().encode('12'), after: new TextEncoder().encode('3\n'), expected: 3 },
+        { framing: { type: 'length-prefixed', lengthBytes: 1 }, decoder: 'uint8', before: Uint8Array.of(2, 0x34), after: Uint8Array.of(1, 5), expected: 5 },
+    ]) {
+        const profile = validateDeviceProfile({
+            ...profileInput,
+            characteristics: [{ ...profileInput.characteristics[0], framing: spec.framing, decoder: spec.decoder }],
+            channels: [{ ...profileInput.channels[0], scale: 1 }],
+        }).profile;
+        const clock = new ManualClock();
+        const service = new AcquisitionService({ clock });
+        t.after(() => service.shutdown());
+        const readings = [];
+        service.addSink(reading => readings.push(reading));
+        const device = new FakeGattDevice(profile);
+        const entry = service.addDevice(device, profile);
+        await clock.advance(1);
+        const oldCallback = device.callbacks.get('fast');
+        oldCallback(spec.before, clock.now());
+        assert.equal(readings.length, 0);
+        device.disconnect();
+        await clock.advance(1200);
+        assert.equal(entry.conn.state, STATES.WAITING_FOR_DATA);
+        oldCallback(spec.after, clock.now());
+        assert.equal(readings.length, 0, 'old subscriptions must not mutate the new connection parser');
+        device.callbacks.get('fast')(spec.after, clock.now());
+        assert.deepEqual(readings.map(reading => reading.raw), [spec.expected], spec.framing.type);
+        assert.equal(entry.conn.counters.reconnects, 1);
+    }
 });
 
 test('a late read timeout after disconnect does not revive or degrade a closed connection', async () => {

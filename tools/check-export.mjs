@@ -13,6 +13,7 @@
  *   - missing = (max − min + 1) − distinct sequences (late arrivals fill gaps)              → reported
  *   - device_time_us step per sequence step: median / min / max (µs)                         → reported (period check)
  * With the JSON export: per device, the channel-0 missing count must equal quality[device].stream.missing → FAIL if not.
+ * Host-time-only/imported rows have no device sequence to check; device sample loss is reported as unavailable.
  * Exit 0 = no FAIL findings, 1 = FAIL findings, 2 = usage/parse error.
  */
 import { createReadStream, readFileSync } from 'node:fs';
@@ -54,14 +55,20 @@ export async function checkCsv(path) {
         const r = Object.fromEntries(header.map((h, i) => [h, f[i]]));
         sessionIds.add(r.session_id);
         const flags = new Set(r.quality_flags ? r.quality_flags.split('|') : []);
+        const hostTimeOnly = flags.has('host_time_only') || r.sequence === '';
         const key = `${r.device_id}|${r.channel_id}`;
         let s = streams.get(key);
-        if (!s) { s = { device: r.device_id, channel: Number(r.channel_id), rows: 0, invalid: 0, epochs: [], firstRel: null, lastRel: null }; streams.set(key, s); }
+        if (!s) { s = { device: r.device_id, channel: Number(r.channel_id), hostTimeOnly, rows: 0, invalid: 0, epochs: [], firstRel: null, lastRel: null }; streams.set(key, s); }
         s.rows++;
         if (r.valid === '0') s.invalid++;
         const rel = r.relative_time_s === '' ? null : Number(r.relative_time_s);
         if (rel !== null) { if (s.firstRel === null) s.firstRel = rel; s.lastRel = rel; }
-        if (r.sequence === '') { legacyRows++; continue; } // legacy host-time-only stream: no sequence to check
+        if (s.hostTimeOnly !== hostTimeOnly) { fail(`${key} row ${rowNo}: mixed device-sequence and host-time-only rows`); continue; }
+        if (hostTimeOnly) {
+            legacyRows++;
+            if (flags.has('host_time_only') && r.device_time_us !== '') fail(`${key} row ${rowNo}: host-time-only row contains a device timestamp`);
+            continue;
+        }
         const seq = Number(r.sequence), dev = r.device_time_us === '' ? null : Number(r.device_time_us);
         let e = s.epochs.at(-1);
         if (!e || flags.has('boot') || flags.has('timebase_reset')) {
@@ -93,7 +100,8 @@ export async function checkCsv(path) {
             return { startRow: e.startRow, first: e.min, last: e.max, samples: e.seen.size, missing: m,
                 deviceStepUs: st.length ? { median: st[st.length >> 1], min: st[0], max: st.at(-1) } : null };
         });
-        out.push({ stream: key, device: s.device, channel: s.channel, rows: s.rows, invalid: s.invalid, epochs: epochs.length, missing, longestGap: longest,
+        out.push({ stream: key, device: s.device, channel: s.channel, hostTimeOnly: s.hostTimeOnly, rows: s.rows, invalid: s.invalid, epochs: epochs.length,
+            missing: s.hostTimeOnly ? null : missing, longestGap: s.hostTimeOnly ? null : longest,
             relativeTimeS: [s.firstRel, s.lastRel], epochDetail: epochs });
     }
     return { file: path, rows: rowNo, sessions: [...sessionIds], legacyRows, streams: out, findings };
@@ -106,6 +114,12 @@ export function compareWithJson(result, jsonText) {
     for (const s of result.streams.filter(x => x.channel === 0)) {
         const q = quality[s.device]?.stream;
         if (!q) { checks.push({ device: s.device, ok: false, note: 'no quality.stream entry in JSON' }); continue; }
+        if (s.hostTimeOnly || q.hostTimeOnly) {
+            const ok = s.hostTimeOnly && q.hostTimeOnly === true;
+            checks.push({ device: s.device, ok, note: ok ? 'Host-time-only stream: device sample loss cannot be measured.'
+                : 'CSV/JSON disagree about host-time-only timing provenance.' });
+            continue;
+        }
         checks.push({ device: s.device, ok: q.missing === s.missing, csvMissing: s.missing, appMissing: q.missing, restarts: q.restarts, duplicates: q.duplicates, outOfOrder: q.outOfOrder });
     }
     return checks;
@@ -125,12 +139,12 @@ if (/check-export\.mjs$/.test(process.argv[1] || '')) {
     const ok = res.findings.length === 0 && jsonFails.length === 0;
     if (asJson) console.log(JSON.stringify({ ...res, verdict: ok ? 'PASS' : 'FAIL' }, null, 1));
     else {
-        console.log(`${res.file}: ${res.rows} rows, session ${res.sessions.join(', ')}${res.legacyRows ? `, ${res.legacyRows} legacy rows (no sequence)` : ''}`);
+        console.log(`${res.file}: ${res.rows} rows, session ${res.sessions.join(', ')}${res.legacyRows ? `, ${res.legacyRows} host-time-only/imported rows (no device sequence)` : ''}`);
         for (const s of res.streams) {
             const st = s.epochDetail.map(e => e.deviceStepUs ? `${Math.round(e.deviceStepUs.median)} µs [${Math.round(e.deviceStepUs.min)}…${Math.round(e.deviceStepUs.max)}]` : '—').join('; ');
-            console.log(`  ${s.stream}: ${s.rows} rows, ${s.invalid} invalid, ${s.epochs} epoch(s), missing ${s.missing}, longest gap ${s.longestGap}, t ${s.relativeTimeS[0]}…${s.relativeTimeS[1]} s, device step ${st}`);
+            console.log(`  ${s.stream}: ${s.rows} rows, ${s.invalid} invalid, ${s.epochs} epoch(s), missing ${s.missing ?? 'unavailable'}, longest gap ${s.longestGap ?? 'unavailable'}, t ${s.relativeTimeS[0]}…${s.relativeTimeS[1]} s, device step ${st}`);
         }
-        for (const c of res.jsonComparison || []) console.log(`  ${c.ok ? 'OK  ' : 'FAIL'} ${c.device}: missing in CSV ${c.csvMissing ?? '?'} vs app quality.stream.missing ${c.appMissing ?? '?'}${c.note ? ' (' + c.note + ')' : ''}`);
+        for (const c of res.jsonComparison || []) console.log(`  ${c.ok ? 'OK  ' : 'FAIL'} ${c.device}: ${c.note || `missing in CSV ${c.csvMissing ?? '?'} vs app quality.stream.missing ${c.appMissing ?? '?'}`}`);
         for (const f of res.findings) console.log('  FAIL ' + f);
         console.log(ok ? 'check-export: PASS' : `check-export: FAIL (${res.findings.length + jsonFails.length} finding(s))`);
     }

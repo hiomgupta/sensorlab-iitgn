@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased - 2026-11-14: acquisition correctness and platform qualification
+
+### Fixed
+- Generic GATT devices now receive distinct session-local identities, allowing verified recording and preventing devices using the same profile from sharing chart-series keys.
+- Connection teardown resets the same protocol adapter used by acquisition. Partial UART frames cannot carry over across a reconnect; callbacks from old subscriptions remain ignored.
+- BLE writes select a mode supported by the characteristic, including older `writeValue()` APIs. Rejected commands are not retried in another mode.
+- Missing optional Bluetooth availability queries are reported as unknown, not as an off adapter. Query failures are logged without disabling device selection.
+- Generic GATT metadata identifies its protocol and preserves host-time-only limitations in History and export warnings.
+- The independent export checker no longer treats interleaved generic GATT host counters as device sequence gaps; unavailable loss measurements and mismatched timing provenance are explicit.
+
+### Added
+- Regression tests for simultaneous generic-device recording/storage/CSV and JSON export, reconnect framing, write capabilities, optional availability queries and host-time-only export checking.
+- A common physical qualification checklist for Windows, macOS, Android and candidate iPhone/iPad Bluefy configurations, with predeclared measurement limits and offline/multi-device evidence required.
+- Corrected the overbroad claim that no iOS browser supports Web Bluetooth. Bluefy is a documented candidate, not qualified SensorLab hardware support.
+
 ## Unreleased — 2026-10-14: final software readiness audit (before hardware testing)
 
 ### Fixed

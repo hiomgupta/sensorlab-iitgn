@@ -79,8 +79,8 @@ export function integrityReport(snapshot) {
         warnings.push(`Readings in storage (${readingCount}) differ from the session's persisted counter (${s.storage.readingsPersisted}).`);
     }
     if (s.simulated) warnings.push('Contains SIMULATED data (demo mode), not physical measurements.');
-    const anyLegacy = Object.values(s.devices || {}).some(d => String(d.protocol || '').startsWith('legacy'));
-    if (anyLegacy) warnings.push('Some devices use a legacy protocol without sequence numbers or device timestamps: sample loss cannot be detected for them and times are host receipt times.');
+    const anyHostTimeOnly = Object.values(s.devices || {}).some(d => String(d.protocol || '').startsWith('legacy') || d.protocol === 'generic-gatt/1');
+    if (anyHostTimeOnly) warnings.push('Some devices use a legacy protocol or generic GATT profile without sequence numbers or device timestamps: sample loss cannot be detected for them and times are host receipt times.');
     return {
         readingCount, chunkCount: snapshot.chunks.length,
         corruptChunks: snapshot.corruptChunks, missingChunkNos: snapshot.missingChunkNos,
@@ -146,8 +146,8 @@ function metadataObject(snapshot, app, exportedWall) {
         quality: s.quality || {},
         qualityFlagLegend: Object.fromEntries(Object.entries(Q).map(([k, v]) => [k.toLowerCase(), v])),
         timeDefinitions: {
-            relative_time_s: 'seconds since recording start. SLTP devices: anchored device clock (first sample after start mapped by host receipt); legacy devices: host receipt time.',
-            device_time_us: 'device microsecond clock, unwrapped across 2^32 rollover; null for legacy devices.',
+            relative_time_s: 'seconds since recording start. SLTP devices: anchored device clock (first sample after start mapped by host receipt); legacy/generic GATT devices: host receipt time.',
+            device_time_us: 'device microsecond clock, unwrapped across 2^32 rollover; null for legacy/generic GATT devices.',
             host_receive_ms: 'host monotonic (performance.now) receipt time in ms since recording start.',
         },
         annotations: snapshot.annotations.map(a => ({ annotationId: a.annotationId, relS: a.relS, text: a.text, deviceId: a.deviceId, wall: a.wall })),

@@ -70,7 +70,7 @@ export class AcquisitionService {
             simulated,
             profile,
             adapter: createProtocolAdapter(profile),
-            deviceId: null,
+            deviceId: profile.kind === 'sltp' ? null : device.transportId,
             advertisedName: device.name,
             displayName: device.name || (profile.name ?? 'Sensor'),
             info: null,
@@ -93,11 +93,10 @@ export class AcquisitionService {
                 scale: channel.scale, offset: channel.offset,
             })));
         } else if (profile.kind !== 'sltp') {
-            entry.deviceId = device.transportId; // session-local fallback identity (no serial in legacy firmware)
             this._setChannels(entry, [{ channelId: 0, name: profile.label || 'value', unit: profile.unit || '', scale: profile.scaleFactor ?? 1, offset: 0 }]);
         }
         entry.conn = new DeviceConnection({
-            device, profile, clock: this.clock, queue: this.queue, config: this.connectionConfig,
+            device, profile, adapter: entry.adapter, clock: this.clock, queue: this.queue, config: this.connectionConfig,
             hooks: {
                 onInfo: (info) => this._onInfo(entry, info),
                 onBytes: (bytes, hostMs, characteristicId) => this._onBytes(entry, bytes, hostMs, characteristicId),
@@ -326,18 +325,21 @@ export class AcquisitionService {
 
     // ── recording ──
     deviceMeta(e) {
+        const generic = e.profile.kind === 'generic';
         return {
             deviceId: e.deviceId,
             displayName: e.displayName,
             advertisedName: e.advertisedName,
             transport: e.transport,
             simulated: e.simulated,
-            protocol: e.profile.kind === 'sltp' ? 'sltp/1' : `legacy:${e.profile.format}`,
+            protocol: e.profile.kind === 'sltp' ? 'sltp/1' : generic ? 'generic-gatt/1' : `legacy:${e.profile.format}`,
             firmware: e.info?.firmware ?? null,
             model: e.info?.model ?? null,
             serial: e.info?.serial ?? null,
             configuredRateHz: e.info?.periodUs ? 1e6 / e.info.periodUs : null,
-            identity: e.profile.kind === 'sltp' ? 'device-serial' : 'browser-device-id (session-local fallback; legacy firmware has no serial)',
+            identity: e.profile.kind === 'sltp' ? 'device-serial' : generic
+                ? 'browser-device-id (session-local fallback; generic profile has no serial)'
+                : 'browser-device-id (session-local fallback; legacy firmware has no serial)',
             channels: e.channels.map((c, i) => ({
                 channelId: c.channelId, name: c.name, unit: c.unit, deviceScale: c.scale, deviceOffset: c.offset,
                 calibration: { ...e.calibration[i], model: CALIBRATION_MODEL },

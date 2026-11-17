@@ -52,13 +52,19 @@ Supported `decoder` formats are the strict parsers in `src/protocol/legacy.js`: 
 JSON, IEEE-754 float32, signed/unsigned 16-bit integers, uint8, and the standard GATT heart-rate
 measurement. `framing` may be `none`, `newline`, `delimiter`, or `length-prefixed`. The UART framing
 adapter retains partial frames between notifications, supports multiple frames in one notification,
-and bounds frame sizes and buffered input.
+and bounds frame sizes and buffered input. Incomplete frames are discarded on disconnect/teardown,
+so bytes from different connections cannot be combined into a fabricated reading.
 
 Each channel ID is a contiguous zero-based index. `valueIndex` selects a value from the decoded
 payload; `scale` and `offset` are applied by the normal acquisition pipeline. Channels sourced from
 different characteristics are recorded as separate host-timestamped events. Generic GATT data does
 not include SensorLab sequence numbers, device timestamps, or SLTP validity flags, so loss detection
 and device-clock timing are unavailable.
+Each device uses its own browser transport ID as a session-local fallback identity, even when two devices
+use the same profile or advertised name. Metadata identifies these streams as `generic-gatt/1`;
+History and exports do not claim sequence-based loss detection for them.
+The independent `tools/check-export.mjs` checker recognizes `host_time_only` rows, does not interpret their
+host counters as device sequence gaps, and reports device sample loss as unavailable (not zero).
 
 The browser chooser is subject to Web Bluetooth permissions and service authorization. A profile
 must request the service UUIDs it uses; this does not enable unrestricted scanning or bypass device
