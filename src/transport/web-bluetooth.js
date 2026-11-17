@@ -21,9 +21,11 @@ export class WebBluetoothTransport {
 
     static isSupported() { return typeof navigator !== 'undefined' && !!navigator.bluetooth; }
 
+    /** Returns null when the browser supports Bluetooth but has no availability query. */
     static async isAvailable() {
         if (!WebBluetoothTransport.isSupported()) return false;
-        try { return await navigator.bluetooth.getAvailability(); } catch { return false; }
+        if (typeof navigator.bluetooth.getAvailability !== 'function') return null;
+        return navigator.bluetooth.getAvailability();
     }
 
     /** Must be called from a user gesture. Opens the browser's device chooser. */
@@ -44,9 +46,10 @@ class WebBluetoothCharacteristic {
     async read() { return copyBytes(await this._c.readValue()); }
 
     async write(bytes) {
-        if (this._c.writeValueWithResponse) await this._c.writeValueWithResponse(bytes);
-        else if (this._c.writeValueWithoutResponse) await this._c.writeValueWithoutResponse(bytes);
-        else await this._c.writeValue(bytes);
+        if (this.properties?.write && typeof this._c.writeValueWithResponse === 'function') await this._c.writeValueWithResponse(bytes);
+        else if (this.properties?.writeWithoutResponse && typeof this._c.writeValueWithoutResponse === 'function') await this._c.writeValueWithoutResponse(bytes);
+        else if ((this.properties?.write || this.properties?.writeWithoutResponse) && typeof this._c.writeValue === 'function') await this._c.writeValue(bytes);
+        else throw new Error('No supported write method for this characteristic.');
     }
 
     async subscribe(onBytes) {

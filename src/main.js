@@ -59,13 +59,19 @@ async function boot() {
 
     // ── Bluetooth availability ──
     const bleOk = WebBluetoothTransport.isSupported();
-    $('bleChip').textContent = bleOk ? 'Bluetooth: available' : 'Bluetooth: unsupported';
+    $('bleChip').textContent = bleOk ? 'Bluetooth: checking availability' : 'Bluetooth: unsupported';
     if (!bleOk) {
         const b = $('bleBanner');
         b.hidden = false;
-        b.textContent = 'Web Bluetooth is not available in this browser or context. Use Chrome or Edge on Windows, macOS, ChromeOS or Android. You can still use Demo mode and view, export or recover stored sessions.';
+        b.textContent = 'Web Bluetooth is not available in this browser or context. Use Chrome or Edge on Windows/macOS/ChromeOS, or Chrome on Android. On phones, open the hosted app over HTTPS. Safari and ordinary iOS Chrome do not support sensor connections; Bluefy on iPhone/iPad is a candidate browser, not yet qualified with SensorLab. You can still use Demo mode and view, export or recover stored sessions.';
     } else {
-        WebBluetoothTransport.isAvailable().then(a => { if (!a) { $('bleChip').textContent = 'Bluetooth: adapter off/unavailable'; } });
+        WebBluetoothTransport.isAvailable().then(a => {
+            $('bleChip').textContent = a === true ? 'Bluetooth: available'
+                : a === false ? 'Bluetooth: adapter off/unavailable' : 'Bluetooth: supported (availability unknown)';
+        }).catch(e => {
+            $('bleChip').textContent = 'Bluetooth: supported (availability unknown)';
+            log('warn', 'Bluetooth availability query failed: ' + e.message + '. Try Add device to check access.');
+        });
     }
 
     // ── live view (isolated from acquisition) ──

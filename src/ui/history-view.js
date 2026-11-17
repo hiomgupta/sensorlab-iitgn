@@ -159,14 +159,14 @@ export class HistoryView {
         for (const d of Object.values(s.devices || {})) {
             const qq = s.quality?.[d.deviceId];
             const st = qq?.stream;
-            const legacy = String(d.protocol).startsWith('legacy');
+            const hostTimeOnly = String(d.protocol).startsWith('legacy') || d.protocol === 'generic-gatt/1';
             const iv = st?.deviceIntervalUs?.n ? `${fmtNum(st.deviceIntervalUs.mean / 1000, 3)} ± ${fmtNum((st.deviceIntervalUs.std ?? 0) / 1000, 3)}` : (st?.hostIntervalMs?.n ? `${fmtNum(st.hostIntervalMs.mean, 2)} ± ${fmtNum(st.hostIntervalMs.std ?? 0, 2)} (host)` : '—');
             q.append(h('tr', {},
                 h('td', {}, d.displayName, h('div', { class: 'dev-id' }, d.deviceId)),
                 h('td', {}, d.protocol), h('td', { class: 'num' }, String(st?.received ?? '—')),
-                h('td', { class: 'num' }, legacy ? 'n/a' : String(st?.missing ?? '—')),
-                h('td', { class: 'num' }, legacy ? 'n/a' : `${st?.gapCount ?? '—'} (${st?.longestGap ?? '—'})`),
-                h('td', { class: 'num' }, legacy ? 'n/a' : `${st?.duplicates ?? '—'} / ${st?.outOfOrder ?? '—'}`),
+                h('td', { class: 'num' }, hostTimeOnly ? 'n/a' : String(st?.missing ?? '—')),
+                h('td', { class: 'num' }, hostTimeOnly ? 'n/a' : `${st?.gapCount ?? '—'} (${st?.longestGap ?? '—'})`),
+                h('td', { class: 'num' }, hostTimeOnly ? 'n/a' : `${st?.duplicates ?? '—'} / ${st?.outOfOrder ?? '—'}`),
                 h('td', { class: 'num' }, String(qq?.invalidPackets ?? '—')),
                 h('td', { class: 'num' }, String(qq?.invalidSamples ?? '—')),
                 h('td', { class: 'num' }, iv),

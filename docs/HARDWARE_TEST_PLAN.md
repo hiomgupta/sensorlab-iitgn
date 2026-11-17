@@ -4,11 +4,12 @@ No step in this document has been run. Before this run, everything about SensorL
 the firmware on an ESP32, real Web Bluetooth, multiple devices, timing accuracy, analog accuracy and crash durability.
 Software-only evidence for everything else is in `docs/FINAL_SOFTWARE_READINESS_REPORT.md`.
 
-Run it in three parts, in order:
+Run Parts A-C in order, then apply Part D to each target configuration:
 
 * **Part A, one board.** One ESP32-C3, one PC, about 90 minutes. It answers the go/no-go question.
 * **Part B, multi-device.** 3–5 boards. Run it only after A passes.
 * **Part C, calibrated equipment.** Oscilloscope, reference resistors and a never-online PC. It can run on another day.
+* **Part D, platform qualification.** Apply the same measurement and offline criteria to each target device/browser.
 
 ## How to record results
 
@@ -95,6 +96,33 @@ Prerequisites: Part A passed; every board has been flashed (A3) and is labelled 
 | C4 | **Crash durability, repeated.** A13 × 10, plus a lid-close/sleep test and (if acceptable) a power pull | max and median loss window; power-loss behaviour noted | | ☐ PASS ☐ FAIL ☐ BLOCKED |
 | C5 | **Never-online PC.** On a PC that has never opened SensorLab: copy the release ZIP and `.sha256` by USB, check `Get-FileHash -Algorithm SHA256`, unzip, disable networking (airplane mode **and** unplug Ethernet), open `index.html`, then connect, record and export. Repeat with `serve.ps1` | works fully offline. This is the only test that can settle "never-online PC" (the audit tested the same machine with networking blocked) | | ☐ PASS ☐ FAIL ☐ BLOCKED |
 
+## Part D: common platform qualification (NOT YET PERFORMED)
+
+The architecture remains browser + BLE + local storage. Qualify Windows Chrome/Edge, macOS Chrome/Edge and Android
+Chrome separately. iPhone/Bluefy and iPad/Bluefy are candidates, not supported configurations until they pass.
+Ordinary Safari/iOS Chrome do not expose Web Bluetooth. Installing a home-screen icon does not add that API.
+
+Before each run, record the exact host/OS/browser/Bluetooth adapter, firmware and app build; number of sensors;
+per-sensor configured rate; required test duration; maximum rate error, sampling jitter and sample loss;
+analog accuracy tolerance and calibrated reference equipment. These limits are application requirements, not
+unmeasured SensorLab guarantees. A blank limit means **BLOCKED**, not PASS.
+
+Use the same agreed limits on every target, and run Parts A-C where applicable. Desktop `file://` and localhost
+launches remain supported delivery candidates; phones use the built HTTPS-hosted app. A laptop's `localhost`
+is not reachable as localhost from a phone, and a plain HTTP LAN URL is not equivalent to HTTPS.
+
+| # | Check | Required evidence and acceptance | Observed | Result |
+|---|---|---|---|---|
+| D1 | **Offline readiness** | First provision the complete app, then disable internet while retaining Bluetooth. Close/reopen or reload fully offline, connect, record, stop, reopen History and complete CSV/JSON/ZIP downloads. Inspect downloaded files, not just the hand-off toast. For Bluefy, absence of service-worker/offline reload support fails the offline-first requirement; do not silently substitute an online session. | | PASS / FAIL / BLOCKED |
+| D2 | **Frequency and timing** | Start with one SLTP sensor, then the required simultaneous device count and rates for the agreed duration (use the 30-minute Part B run as the initial configuration). Export per-device configured rate, measured device-clock rate, mean/std/max device intervals, missing samples, duplicates, parse errors and connection events. Compare with the predeclared limits and Part C reference timing. BLE receipt bursts are not device sampling jitter; a chart's refresh rate is not the acquisition rate. | | PASS / FAIL / BLOCKED |
+| D3 | **Accuracy and provenance** | Apply Part C known inputs. Export raw and calibrated readings; verify units, gain/offset/tare, invalid flags and accuracy against the reference. Values and device/channel identity must survive storage and CSV/JSON export unchanged. No interpolation or invented samples. | | PASS / FAIL / BLOCKED |
+| D4 | **Multi-device isolation** | Distinct identities, no mixed channels, every selected required channel verified at startup. Disconnect/power-cycle one sensor: others continue within the agreed limits; only affected streams acquire the associated gap/recovery events. Repeat simultaneous disconnect/reconnect. Apply to SLTP and any generic GATT profiles intended for use. | | PASS / FAIL / BLOCKED |
+| D5 | **Quality and recovery** | Reconcile persisted/exported totals and quality counters with an independently known source. Intentional loss, invalidity and disconnects must be reported, not fabricated away. Repeat interrupted-recording recovery and storage-error checks. Generic GATT/legacy streams must explicitly say device loss and sampling timestamps are unavailable; they cannot qualify a requirement for device-clock timing or sequence-based loss detection. | | PASS / FAIL / BLOCKED |
+| D6 | **Foreground and screen behavior** | Keep the app visible; test wake-lock acceptance, system release and return to foreground. Document observed screen-lock/background interruptions without claiming uninterrupted background acquisition. Missing wake lock requires a documented manual screen-on procedure for the qualified run. | | PASS / FAIL / BLOCKED |
+
+Only declare a platform/device-count/rate combination qualified when all required rows pass with saved logs and exports.
+App-logic tests, a matching browser engine or one successful Bluetooth connection are insufficient.
+
 ## Troubleshooting
 
 | Symptom | Likely cause → action |
@@ -118,6 +146,7 @@ Prerequisites: Part A passed; every board has been flashed (A3) and is labelled 
 | A, one board | ☐ PASS ☐ FAIL ☐ BLOCKED | | | |
 | B, multi-device | ☐ PASS ☐ FAIL ☐ BLOCKED | | | |
 | C, calibrated | ☐ PASS ☐ FAIL ☐ BLOCKED | | | |
+| D, platform qualification (one row per configuration) | PASS / FAIL / BLOCKED | | | |
 
 Hardware claims are allowed only after the matching part is signed off. Update `docs/VALIDATION_REPORT.md`
 §11–13 and `docs/OPERATING_LIMITS.md` with the measured values, using the evidence classes `REAL BLE INTEGRATION` / `PHYSICAL MEASUREMENT`.

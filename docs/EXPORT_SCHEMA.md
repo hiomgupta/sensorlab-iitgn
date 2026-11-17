@@ -17,13 +17,13 @@ Tests: `test/unit/export.test.js`, plus the E2E downloads in `test/e2e/run-e2e.m
 | column | meaning |
 |---|---|
 | `session_id` | immutable session UUID |
-| `device_id` | stable identity: `ble:<serial>` (SLTP), `sim:<serial>` (simulated), `webbt:<id>` (legacy, session-local fallback), `legacy:<id>` (imported from 1.x) |
+| `device_id` | stable identity: `ble:<serial>` (SLTP), `sim:<serial>` (simulated), `webbt:<id>` (legacy/generic GATT, session-local fallback), `legacy:<id>` (imported from 1.x) |
 | `device_name` | display name at export time (may be renamed, so it is not an identity) |
 | `channel_id` | channel index on that device |
 | `parameter` | channel name |
-| `sequence` | device sequence number (SLTP). For legacy devices it is a host-assigned arrival counter. Empty for imports. |
-| `device_time_us` | device clock in µs, unwrapped across the 2³² rollover. Empty for legacy devices. |
-| `relative_time_s` | seconds since recording start. SLTP: device clock anchored at the first sample. Legacy: host receipt time. |
+| `sequence` | device sequence number (SLTP). For legacy/generic GATT devices it is a host-assigned arrival counter, not evidence of device sample continuity. Empty for imports. |
+| `device_time_us` | device clock in µs, unwrapped across the 2³² rollover. Empty for legacy/generic GATT devices. |
+| `relative_time_s` | seconds since recording start. SLTP: device clock anchored at the first sample. Legacy/generic GATT: host receipt time. |
 | `host_receive_ms` | host monotonic (`performance.now`) receipt time, in ms since recording start |
 | `raw_value` | raw value as received (SLTP int32 counts; legacy decoded number). Never calibrated. |
 | `value` | calibrated engineering value. **Empty when invalid.** No sentinel numbers. |
@@ -52,6 +52,8 @@ readings     { columns: [device_id, channel_id, sequence, device_time_us, relati
 
 Definitions used in `quality`:
 
+* **Protocol** (`devices[].protocol`): `sltp/1`, `legacy:<format>`, or `generic-gatt/1`.
+  Generic GATT streams have `hostTimeOnly: true` and cannot report device sample loss or device-clock jitter.
 * **Jitter** (`deviceIntervalUs.std`): sample standard deviation of the device-clock intervals between
   *consecutive* sequence numbers. Intervals that span a gap or a clock anomaly are excluded.
   `hostIntervalMs` is the same statistic on host receipt times. It includes BLE connection-interval
@@ -77,4 +79,4 @@ a failed import leaves no partial imported session.
 
 An export always succeeds if the data can be read, but it is **flagged** (UI toast + `integrity.warnings`) when
 the session is open or recovered, chunks are corrupt or missing, readings were unsaved or dropped, the data is
-simulated, or the session contains legacy streams in which loss cannot be detected.
+simulated, or the session contains legacy/generic GATT streams in which device loss cannot be detected.

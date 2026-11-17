@@ -51,7 +51,7 @@ travels only over BLE GATT notifications.
 
 ### Accepted limitations (stated in the UI and README)
 
-* Web Bluetooth works only in Chromium browsers. Vendors document Chrome/Edge on Windows 10+, macOS, ChromeOS and
+* The desktop/Android targets use Chromium Web Bluetooth. Vendors document Chrome/Edge on Windows 10+, macOS, ChromeOS and
   Android; only Chrome 154 on Windows 11 was exercised here, and only with simulated devices. It does not work in Firefox or Safari. On Linux a browser flag is needed. Enterprise policy
   `DefaultWebBluetoothGuardSetting` can disable it.
 * **The page must stay visible during acquisition.** Hidden or locked-screen recording is not
@@ -150,5 +150,6 @@ to be added without changing the parser, tracker, storage or export layers.
 
 ## Rejected for now
 * **Capacitor/native migration** for keep-awake or background acquisition: out of scope for the lifecycle work, and it would not help laptops.
-  Required for iPhone and for screen-off recording (see `docs/PLATFORM_COMPATIBILITY.md`).
+  Reliable screen-off acquisition would require separate native work. Bluefy is an unqualified iPhone/iPad browser candidate
+  that may reuse the current app without a SensorLab native shell (see `docs/PLATFORM_COMPATIBILITY.md`).
 * **Fabricating, interpolating or holding values for stale streams:** never. The last valid sample is shown with its age as "last …".

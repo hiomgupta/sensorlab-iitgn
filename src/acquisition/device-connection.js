@@ -52,12 +52,13 @@ export class DeviceConnection {
      * @param {object} o
      * @param o.device transport device
      * @param o.profile {kind:'sltp'} | {kind:'legacy', serviceUuid, charUuid, ...}
+     * @param o.adapter protocol adapter shared with acquisition so teardown resets the active decoder
      * @param o.hooks {onInfo(info), onBytes(bytes, hostMs) -> boolean valid, onState(state, detail)}
      */
-    constructor({ device, profile, clock, queue, hooks, config = {} }) {
+    constructor({ device, profile, adapter = createProtocolAdapter(profile), clock, queue, hooks, config = {} }) {
         this.device = device;
         this.profile = profile;
-        this.adapter = createProtocolAdapter(profile);
+        this.adapter = adapter;
         this.clock = clock;
         this.queue = queue || new ConnectQueue();
         this.hooks = hooks;

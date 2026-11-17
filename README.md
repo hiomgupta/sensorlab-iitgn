@@ -8,6 +8,10 @@ Every stream is keyed by stable device and channel identity. Lost, duplicated an
 and shown. Interrupted recordings are detected and can be recovered. Exports contain the full stored session in a
 documented, versioned format. Nothing is sent over the network.
 
+The priorities are sampling fidelity, measurement accuracy, explicit data-quality reporting, offline operation,
+and independent simultaneous device streams. Platform support must be qualified against those same requirements;
+browser compatibility alone is not evidence of measurement performance.
+
 > **Validation status (2026-10-12):** application logic, storage, export and offline behaviour are verified with
 > automated tests and simulated devices. **No physical BLE test, multi-device test, timing measurement or hardware crash test
 > has been performed yet.** See [`docs/VALIDATION_REPORT.md`](docs/VALIDATION_REPORT.md) and
@@ -28,7 +32,10 @@ documented, versioned format. Nothing is sent over the network.
    are named in a non-blocking warning, and their last value is shown with its age. **■ Stop** flushes, finalizes and reports whether finalization succeeded.
 6. **History** shows sessions with recovery, a data-quality table, the lifecycle event trail, CSV/JSON/ZIP export, and delete.
 
-**Platforms:** Chrome/Edge on laptops; Chrome on Android (documented, not yet tested). **iPhone/iPad cannot connect to sensors**, because no iOS browser supports Web Bluetooth.
+**Platforms:** Chrome/Edge on Windows/macOS laptops; Chrome on Android (platform support documented; real BLE not yet qualified here).
+Safari and ordinary iOS Chrome do not expose Web Bluetooth. **Bluefy on iPhone/iPad is a candidate** for using the same
+HTTPS-hosted app, not verified SensorLab support. Its connection, offline reload, recording and export must pass the
+same hardware qualification before lab use.
 See [`docs/PLATFORM_COMPATIBILITY.md`](docs/PLATFORM_COMPATIBILITY.md).
 
 Keep the page visible while recording. Data lives in this browser profile, so export what you need to keep.

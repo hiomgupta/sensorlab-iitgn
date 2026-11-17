@@ -123,6 +123,7 @@ console.log(`Browser: ${results.browser}\n\n[1] file:// (no server), network off
     await waitFor(() => st(page, () => !!window.__sensorlab), 10000);
     results.measurements.fileLoadMs = Date.now() - t0;
     check('app boots from file:// with networking disabled', await st(page, () => !!window.__sensorlab && document.getElementById('appVersion').textContent.startsWith('v')));
+    await page.waitForFunction(() => document.getElementById('bleChip').textContent !== 'Bluetooth: checking availability', { timeout: 5000 });
     const bluetoothStatus = await st(page, () => ({
         secure: isSecureContext,
         supported: !!navigator.bluetooth,
@@ -130,7 +131,7 @@ console.log(`Browser: ${results.browser}\n\n[1] file:// (no server), network off
         bannerHidden: document.getElementById('bleBanner').hidden,
     }));
     const bluetoothReported = bluetoothStatus.supported
-        ? /^Bluetooth: (available|adapter off\/unavailable)$/.test(bluetoothStatus.chip) && bluetoothStatus.bannerHidden
+        ? /^Bluetooth: (available|adapter off\/unavailable|supported \(availability unknown\))$/.test(bluetoothStatus.chip) && bluetoothStatus.bannerHidden
         : bluetoothStatus.chip === 'Bluetooth: unsupported' && !bluetoothStatus.bannerHidden;
     check('Web Bluetooth capability is reflected honestly on file://', bluetoothStatus.secure && bluetoothReported, JSON.stringify(bluetoothStatus));
     check('SIMULATED banner hidden with no devices', await st(page, () => document.getElementById('simBanner').hidden));
@@ -370,6 +371,35 @@ console.log('\n[4] browser without Web Bluetooth');
     check('history/export of local data reachable without Bluetooth', listed >= 3, `${listed} sessions listed`);
     await page.keyboard.press('Escape');
     check('demo mode works without Bluetooth', (await startDemo(page, 1, 10)) === 1);
+    await page.close();
+}
+
+console.log('\n[4b] optional Bluetooth availability query');
+for (const availability of ['missing', 'rejected', 'off']) {
+    const page = await browser.newPage();
+    const a = audit(page, ['file://', 'data:', 'blob:']);
+    await page.evaluateOnNewDocument(mode => {
+        const bluetooth = {
+            async requestDevice() { throw new DOMException('No device selected', 'NotFoundError'); },
+        };
+        if (mode === 'rejected') bluetooth.getAvailability = async () => { throw new DOMException('Availability query denied', 'SecurityError'); };
+        if (mode === 'off') bluetooth.getAvailability = async () => false;
+        Object.defineProperty(Navigator.prototype, 'bluetooth', { get: () => bluetooth, configurable: true });
+    }, availability);
+    await page.goto(FILE_URL, { waitUntil: 'load' });
+    await page.waitForFunction(() => !!window.__sensorlab);
+    const status = await st(page, () => ({
+        chip: document.getElementById('bleChip').textContent,
+        bannerHidden: document.getElementById('bleBanner').hidden,
+        log: document.getElementById('logBody').textContent,
+    }));
+    const expected = availability === 'off' ? 'Bluetooth: adapter off/unavailable' : 'Bluetooth: supported (availability unknown)';
+    check(`${availability} availability query is reported without disabling Bluetooth`, status.chip === expected && status.bannerHidden, status.chip);
+    if (availability === 'rejected') check('availability query rejection is explained in the log', /Bluetooth availability query failed: Availability query denied/.test(status.log));
+    await page.click('#addDeviceBtn');
+    await page.click('#connectSltp');
+    check(`device chooser remains reachable with ${availability} availability`, await st(page, () => document.getElementById('addError').textContent === 'No device selected.'));
+    check(`no uncaught page errors with ${availability} availability`, a.errors.length === 0, a.errors.join('; '));
     await page.close();
 }
 

@@ -96,7 +96,7 @@ export class ConnectView {
 
     open() {
         $('addError').textContent = '';
-        if (!WebBluetoothTransport.isSupported()) $('addError').textContent = 'Web Bluetooth is not available in this browser. Use Chrome or Edge, or try Demo mode.';
+        if (!WebBluetoothTransport.isSupported()) $('addError').textContent = 'Web Bluetooth is not available in this browser or context. Use Chrome/Edge on Windows/macOS or Chrome on Android; phones need the hosted app over HTTPS. Bluefy on iPhone/iPad is a candidate, not yet qualified. Demo mode is available without Bluetooth.';
         openDialog(this.dialog);
     }
 
