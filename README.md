@@ -14,6 +14,8 @@ and shown. Interrupted recordings are detected and can be recovered. Exports con
 documented, versioned format. The default build sends nothing over the network.
 An opt-in build supports Google sign-in and automatic Firebase backup when online,
 without changing offline recording. See [optional cloud setup](docs/CLOUD_BACKUP.md).
+For Google sign-in on GitHub Pages, use the [configured Pages deployment workflow](.github/workflows/pages.yml)
+and [Pages setup instructions](docs/CLOUD_BACKUP.md#github-pages-deployment), not branch-root publishing.
 **Profile** brings account status, backup status, local recording counts, recent
 recordings and a History shortcut together. The main History button remains available.
 

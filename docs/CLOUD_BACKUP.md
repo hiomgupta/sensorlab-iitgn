@@ -57,6 +57,74 @@ sign-in and Cloud Firestore backup. Nothing needs a server to record locally.
    to test cloud features. Running `npm.cmd run build` without the flag restores
    the strict offline-only edition.
 
+## GitHub Pages deployment
+
+Publishing the repository's `main` branch **root** does not run the build. That
+serves the development entry point without Firebase, so Profile shows **Local mode**
+and Google sign-in is unavailable. It also lacks the generated service worker.
+Publishing the default offline build has the same sign-in limitation.
+
+The [Pages workflow](../.github/workflows/pages.yml) instead builds the cloud-enabled
+edition and uploads **only `dist`**. It runs on pushes to `main` and can be started
+manually. The separate [CI workflow](../.github/workflows/ci.yml) continues to build
+and audit the strict offline edition; it does not publish that edition over the
+configured website.
+
+The project owner must perform these setup steps:
+
+1. In Firebase **Authentication > Settings > Authorized domains**, add
+   **`hiomgupta.github.io`** for
+   `https://hiomgupta.github.io/sensorlab-iitgn/`. Enter the hostname only, without
+   `https://` or `/sensorlab-iitgn/`. Keep the configuration's `authDomain` as the
+   Firebase-provided `YOUR_PROJECT_ID.firebaseapp.com`. Ensure the Google provider
+   is enabled and the supplied Firestore rules are published.
+2. In the GitHub repository, open **Settings > Secrets and variables > Actions >
+   Variables > New repository variable**. Name it **`FIREBASE_WEB_CONFIG`** and
+   paste a JSON object containing **only** the four public fields shown above:
+   `apiKey`, `authDomain`, `projectId`, and `appId`. Obtain these from Firebase's
+   registered Web app. Do not paste service-account credentials.
+
+   If the ignored local configuration file exists, this is an optional equivalent
+   PowerShell command:
+
+   ```powershell
+   Get-Content -Raw .\firebase-config.local.json | gh variable set FIREBASE_WEB_CONFIG --repo hiomgupta/sensorlab-iitgn
+   ```
+
+   This public web configuration is intentionally bundled into the browser app.
+   It is not an authorization secret; account access still depends on Firebase
+   Authentication and Firestore rules. The local file remains gitignored.
+3. Commit the workflow/documentation through the normal review process and merge
+   them into `main`. This guide does not itself commit, push or deploy anything.
+4. In **Settings > Pages > Build and deployment > Source**, choose **GitHub Actions**
+   instead of **Deploy from a branch**.
+5. Open **Actions > Deploy GitHub Pages > Run workflow**, choose **main**, and run it
+   after the variable and Pages source are configured. Subsequent pushes to `main`
+   trigger deployment automatically.
+
+The workflow validates configuration with the same helper used by local builds,
+writes the allowed values to the runner's temporary directory, and calls the build
+with `--cloud-config`. Missing, malformed or unsafe configuration fails the build;
+it does **not** silently deploy an offline-only site. No Firebase administrator
+credentials are needed for Pages deployment, and the temporary JSON file itself is
+not part of the uploaded artifact.
+
+After a successful deployment:
+
+- Open the site and confirm **Profile** shows **Signed out** and an enabled Google
+  sign-in action, rather than **Local mode**.
+- Complete Google sign-in on the authorized domain and verify the profile and a
+  test recording in Firestore using the live acceptance checklist below.
+- Confirm the generated `sw.js` and local `cloud.js` load from the site's
+  `/sensorlab-iitgn/` path. Relative build assets keep this project subpath intact.
+- If an old tab shows the previous edition, refresh/update its service worker when
+  no recording is active. Do not clear IndexedDB or site data just to refresh UI.
+
+If the action is enabled but Google reports `auth/unauthorized-domain`, fix the
+Firebase authorized-domain setting. If Profile still shows **Local mode**, inspect
+the last Pages deployment and confirm it used the configured `dist` artifact rather
+than the repository root or a default offline build.
+
 ## Profile and connected history
 
 **Profile** replaces the old Cloud entry in the header. Its always-visible label

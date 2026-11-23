@@ -1,0 +1,69 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/configure-pages@v5
+      - run: npm ci
+      - name: Prepare public Firebase configuration
+        env:
+          FIREBASE_WEB_CONFIG: ${{ vars.FIREBASE_WEB_CONFIG }}
+        run: |
+          node --input-type=module - <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          import { join } from 'node:path';
+          import { validateCloudConfig } from './scripts/cloud-config.mjs';
+
+          const value = process.env.FIREBASE_WEB_CONFIG;
+          if (!value?.trim()) {
+            throw new Error('Set the repository Actions variable FIREBASE_WEB_CONFIG to the four public Firebase web configuration fields.');
+          }
+          let parsed;
+          try {
+            parsed = JSON.parse(value);
+          } catch {
+            throw new Error('FIREBASE_WEB_CONFIG must be valid JSON containing only public Firebase web configuration.');
+          }
+          const config = validateCloudConfig(parsed);
+          writeFileSync(join(process.env.RUNNER_TEMP, 'sensorlab-firebase.json'), JSON.stringify(config), { mode: 0o600 });
+          NODE
+      - name: Build cloud-enabled site
+        run: npm run build -- --cloud-config "$RUNNER_TEMP/sensorlab-firebase.json"
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy site
+        id: deployment
+        uses: actions/deploy-pages@v4
