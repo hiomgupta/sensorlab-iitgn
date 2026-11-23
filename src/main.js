@@ -2,7 +2,7 @@
  * SensorLab 2 application controller. Wires the layers together:
  *   transport → AcquisitionService → Recorder → IdbRepository
  *                                  ↘ LiveChart / latest-values table (isolated sinks)
- * No network access anywhere. Remote origins are also blocked by CSP (connect-src 'none').
+ * Default builds have no network access. Configured cloud builds load a separate, optional sync layer.
  */
 import { realClock } from './util/clock.js';
 import { AcquisitionService } from './acquisition/acquisition-service.js';
@@ -20,6 +20,7 @@ import { WebBluetoothTransport } from './transport/web-bluetooth.js';
 import { $, h, clear, toast, log, openDialog, closeDialog, fmtNum, fmtBytes, fmtDuration, lsGet, lsSet } from './ui/dom.js';
 import { DevicesView } from './ui/devices-view.js';
 import { HistoryView } from './ui/history-view.js';
+import { ProfileView } from './ui/profile-view.js';
 import { ConnectView } from './ui/connect-view.js';
 import { InstallView } from './ui/install-view.js';
 
@@ -102,7 +103,8 @@ async function boot() {
     devicesView.sync();
     const connectView = new ConnectView({ service, clock });
     $('addDeviceBtn').addEventListener('click', () => connectView.open());
-    const history = new HistoryView({ repo, app: APP, getActiveSessionId: () => service.sessionId, onChanged: () => { checkInterrupted(repo); updateStorageStatus(); } });
+    const history = new HistoryView({ repo, app: APP, getActiveSessionId: () => service.sessionId, onChanged: () => { checkInterrupted(repo); updateStorageStatus(); window.__sensorlab?.profile?.refreshIfOpen(); } });
+    const profile = new ProfileView({ repo, history, storageReady: storageOk });
     $('historyBtn').addEventListener('click', () => history.open());
     $('recoveryReview').addEventListener('click', () => history.open());
     $('helpBtn').addEventListener('click', () => openDialog($('helpDialog')));
@@ -323,6 +325,7 @@ async function boot() {
         } else banner.hidden = true;
     }
     controller.onChange(renderSession);
+    controller.onChange(() => profile.refreshIfOpen());
     keepAwake.onChange(renderSession);
     setInterval(() => { renderSession(); renderRecStatus(recorder.status()); }, 1000);
 
@@ -394,7 +397,8 @@ async function boot() {
     }
 
     registerServiceWorker();
-    window.__sensorlab = { service, recorder, repo, chart, connectView, controller, keepAwake, installView, APP }; // debugging / automated tests
+    window.__sensorlab = { service, recorder, repo, chart, connectView, controller, keepAwake, installView, history, profile, storageOk, APP }; // debugging / automated tests
+    window.dispatchEvent(new Event('sensorlab-ready'));
 }
 
 function applyTheme(t) {

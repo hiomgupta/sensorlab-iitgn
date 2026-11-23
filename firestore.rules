@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+    match /users/{uid} {
+      allow read, delete: if owner(uid);
+      allow create, update: if owner(uid)
+        && request.resource.data.uid == uid
+        && request.resource.data.keys().hasOnly([
+          'uid', 'email', 'displayName', 'photoURL', 'emailVerified',
+          'provider', 'createdAt', 'lastSignInAt'
+        ]);
+      match /sessions/{sessionId} {
+        allow read, delete: if owner(uid);
+        allow create, update: if owner(uid)
+          && request.resource.data.sessionId == sessionId
+          && request.resource.data.schema == 'sensorlab.cloud-session/1'
+          && request.resource.data.keys().hasOnly([
+            'schema', 'sessionId', 'name', 'state', 'startedWall',
+            'documentCount', 'readingCount', 'annotationCount', 'uploadedAt'
+          ]);
+        match /parts/{partId} {
+          allow read, delete: if owner(uid);
+          allow create, update: if owner(uid)
+            && request.resource.data.keys().hasOnly(['kind', 'sourceId', 'partNo', 'partCount', 'payload'])
+            && request.resource.data.kind in ['session', 'chunk', 'annotations']
+            && request.resource.data.sourceId is string
+            && request.resource.data.partNo is int
+            && request.resource.data.partCount is int
+            && request.resource.data.partNo >= 0
+            && request.resource.data.partNo < request.resource.data.partCount
+            && request.resource.data.payload is string
+            && request.resource.data.payload.size() <= 180000;
+        }
+      }
+    }
+  }
+}

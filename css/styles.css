@@ -47,6 +47,13 @@ h3 { font-size: 13px; margin: 14px 0 6px; }
 .btn-primary:hover:not(:disabled) { opacity: .9; background: var(--primary); }
 .btn-ghost { background: transparent; border-color: transparent; }
 .btn-sm { padding: 3px 9px; font-size: 12px; }
+.profile-trigger { display: inline-flex; align-items: center; gap: 7px; }
+.profile-avatar { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; background: var(--muted-bg); color: var(--text); font-size: 10px; font-weight: 600; }
+.profile-status { font-size: 11px; color: var(--muted); }
+.profile-status[data-tone="good"] { color: var(--ok); }
+.profile-status[data-tone="warning"] { color: var(--warn); }
+.profile-status[data-tone="error"] { color: var(--err); }
+.profile-status[data-tone="info"] { color: var(--info); }
 .btn-danger { color: var(--err); border-color: var(--err); }
 .btn-record.recording { background: var(--err); color: #fff; border-color: var(--err); }
 .file-btn { position: relative; overflow: hidden; }
@@ -107,6 +114,30 @@ select, input, textarea { font: inherit; font-size: 13px; padding: 5px 8px; bord
 dialog { border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); padding: 18px 20px; width: min(560px, 94vw); max-height: 90vh; overflow: auto; }
 dialog.wide { width: min(1000px, 96vw); }
 dialog.medium { width: min(820px, 96vw); }
+dialog.profile-dialog { width: min(640px, 94vw); }
+.profile-identity { display: flex; align-items: center; gap: 12px; }
+.profile-avatar-large { width: 48px; height: 48px; font-size: 18px; }
+.profile-identity-text { min-width: 0; overflow-wrap: anywhere; }
+.profile-identity-text h3 { margin: 0; font-size: 16px; }
+.profile-identity-text p { margin: 3px 0; color: var(--muted); }
+.profile-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.profile-section { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+.profile-section-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.profile-section-heading h3 { margin: 0; }
+.profile-section p, #profileAccountNote { font-size: 12px; overflow-wrap: anywhere; }
+.profile-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 12px 0 6px; }
+.profile-stats > div { padding: 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); }
+.profile-stats dt { font-size: 11px; color: var(--muted); }
+.profile-stats dd { margin: 2px 0 0; font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.profile-hint { margin: 6px 0; }
+.profile-recent { list-style: none; margin: 0; padding: 0; }
+.profile-recent li + li { margin-top: 6px; }
+.profile-recent button { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; }
+.profile-recent button > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.profile-recent small { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+.profile-recent .profile-open { flex: none; color: var(--muted); font-size: 11px; }
+.profile-help { margin-top: 16px; border-top: 1px solid var(--border); padding-top: 12px; font-size: 12px; color: var(--muted); }
+.profile-help summary { cursor: pointer; color: var(--text); }
 .data-table.wrap th, .data-table.wrap td { white-space: normal; }
 dialog::backdrop { background: rgba(0,0,0,.55); }
 .dlg-close-form { position: absolute; right: 10px; top: 8px; margin: 0; }
@@ -150,6 +181,7 @@ dialog::backdrop { background: rgba(0,0,0,.55); }
     .chart-wrap { flex: none; height: 320px; }
     .latest-wrap { max-height: none; overflow-x: auto; }
     .form-grid, .preset-list { grid-template-columns: 1fr; }
+    .profile-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 .session-strip { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--muted); }

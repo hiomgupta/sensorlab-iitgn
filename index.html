@@ -27,6 +27,11 @@
         <button id="addDeviceBtn" class="btn btn-primary" type="button">+ Add device</button>
         <button id="demoBtn" class="btn" type="button">Demo</button>
         <button id="historyBtn" class="btn" type="button">History</button>
+        <button id="profileBtn" class="btn profile-trigger" type="button" aria-haspopup="dialog" aria-controls="profileDialog">
+            <span id="profileAvatar" class="profile-avatar" aria-hidden="true">SL</span>
+            <span>Profile</span>
+            <span id="profileAuthState" class="profile-status" data-tone="neutral">Local mode</span>
+        </button>
         <button id="installBtn" class="btn" type="button" aria-haspopup="dialog" aria-controls="installDialog">Install</button>
         <button id="helpBtn" class="btn btn-ghost" type="button">Help</button>
         <button id="logBtn" class="btn btn-ghost" type="button" aria-expanded="false" aria-controls="logPanel">Log</button>
@@ -93,7 +98,7 @@
 <footer class="status-bar">
     <span id="storageStatus">Storage: checking…</span>
     <span class="sep" aria-hidden="true">|</span>
-    <span>Data stays on this computer. Nothing is uploaded.</span>
+    <span id="dataPolicy">Data stays on this computer. Nothing is uploaded.</span>
 </footer>
 
 <section id="logPanel" class="log-panel" hidden aria-label="Event log">
@@ -103,6 +108,53 @@
         <button type="button" class="btn btn-sm" id="logClose" aria-label="Close log">Close</button></div>
     <ol id="logBody" class="log-body"></ol>
 </section>
+
+<dialog id="profileDialog" class="profile-dialog" aria-labelledby="profileTitle">
+    <form method="dialog" class="dlg-close-form"><button class="dlg-x" aria-label="Close">×</button></form>
+    <h2 id="profileTitle">Profile</h2>
+    <section class="profile-identity" aria-label="Your account">
+        <span id="profileAvatarLarge" class="profile-avatar profile-avatar-large" aria-hidden="true">SL</span>
+        <div class="profile-identity-text">
+            <h3 id="profileName">Local workspace</h3>
+            <p id="profileEmail">Not signed in</p>
+            <span id="profileSessionState" class="profile-status" data-tone="neutral">Local mode</span>
+        </div>
+    </section>
+    <p id="profileAccountNote" class="muted">Cloud backup is not configured. Your recordings stay in this browser.</p>
+    <div class="profile-actions">
+        <button id="cloudSignIn" class="btn btn-primary" type="button" disabled>Sign in with Google</button>
+        <button id="cloudSignOut" class="btn" type="button" disabled hidden>Sign out</button>
+    </div>
+    <section class="profile-section" aria-labelledby="profileBackupTitle">
+        <div class="profile-section-heading">
+            <h3 id="profileBackupTitle">Cloud backup</h3>
+            <span id="profileBackupState" class="profile-status" data-tone="neutral">Local only</span>
+        </div>
+        <p id="cloudStatus" role="status" aria-live="polite">Recording and local storage work without internet.</p>
+        <button id="cloudSyncNow" class="btn btn-sm" type="button" disabled>Sync now</button>
+    </section>
+    <section class="profile-section" aria-labelledby="profileRecordingsTitle">
+        <div class="profile-section-heading">
+            <h3 id="profileRecordingsTitle">Recordings on this browser</h3>
+            <button id="profileHistoryBtn" class="btn btn-sm" type="button">View all history</button>
+        </div>
+        <dl class="profile-stats" aria-label="Local recording summary">
+            <div><dt>Total saved</dt><dd id="profileTotal">—</dd></div>
+            <div><dt>Local only</dt><dd id="profileLocal">—</dd></div>
+            <div><dt>Pending backup</dt><dd id="profilePending">—</dd></div>
+            <div><dt>Backed up</dt><dd id="profileBackedUp">—</dd></div>
+        </dl>
+        <p class="muted profile-hint">Includes all local accounts. This is not a cloud library.</p>
+        <h3>Recent recordings</h3>
+        <p id="profileHistoryState" class="muted">Open Profile to load your recordings.</p>
+        <ul id="profileRecent" class="profile-recent"></ul>
+    </section>
+    <details class="profile-help">
+        <summary>How offline backup works</summary>
+        <p>Google sign-in enables automatic backup of your profile and completed recordings. Offline recordings belong to the last signed-in account. Old or unassigned recordings stay local unless you choose Upload in History.</p>
+        <p>Keep important exports. Cloud backup requires an open app and internet; it does not run after you close the app. Deleting local history does not delete cloud copies. History lets you view, export, recover, and delete local recordings.</p>
+    </details>
+</dialog>
 
 <!-- ── Add device ── -->
 <dialog id="addDialog" aria-labelledby="addTitle">

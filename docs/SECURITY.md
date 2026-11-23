@@ -2,7 +2,7 @@
 
 ## What offline mode protects against
 
-* **Network exfiltration and remote dependencies:** the app makes no network requests. This is enforced by
+* **Network exfiltration and remote dependencies:** the default offline-only build makes no network requests. This is enforced by
   a CSP (`connect-src 'none'`, scripts and styles `'self'` only), a static audit of `dist/`
   (`npm run audit:offline`) and a dynamic E2E network audit (zero non-local requests). There are no
   analytics, fonts, CDNs or cloud services.
@@ -55,11 +55,19 @@ It is unknown whether per-user rules were ever deployed. Owner checklist:
    The key stays in git history (commit `25dbe42`). Rewriting history is not recommended for a non-secret key,
    but deleting the key is.
 
-SensorLab 2 ships **no** Firebase code, configuration, sign-in, or cloud banner.
+The default SensorLab 2 build ships **no** Firebase code or configuration. The opt-in
+cloud edition described in [CLOUD_BACKUP.md](CLOUD_BACKUP.md) uses a separately
+configured Firebase project, bundled Firebase Auth/Firestore SDKs, and a narrowly
+expanded CSP. Its user-confirmed Google sign-in permits profile and owned recording
+uploads. It is not covered by the default build's zero-network claim. Deleting local
+recordings does not delete cloud copies; deploy owner-only Firestore rules and
+establish cloud retention before enabling it for real users.
 
 ## Dependency review
 
-Runtime: Chart.js 4.4.7 (MIT, vendored). Dev-only, pinned in `package-lock.json`: puppeteer-core 25.13.0,
+Runtime: Chart.js 4.4.7 (MIT, vendored). Opt-in cloud runtime: Firebase 13.4.0
+(Apache-2.0 SDKs, bundled from the lockfile; not loaded from a CDN).
+Dev-only, pinned in `package-lock.json`: puppeteer-core 25.13.0,
 esbuild 0.28.2, fake-indexeddb 6.2.5, chart.js 4.4.7. `npm audit` reported **0 vulnerabilities** on
 2026-10-12, after upgrading puppeteer-core from 24.43.1, which pulled in advisories for basic-ftp and extract-zip.
 puppeteer-core 25.13.0 was published 2026-10-08. It is a recent dev-only tool and never ships to users.

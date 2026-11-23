@@ -3,10 +3,19 @@
 Offline, Bluetooth-only data acquisition for laboratory sensors (ESP32 BLE nodes), running in Chrome or Edge.
 It is an IIT Gandhinagar project (Prof. Biswajit Saha, Smart Sense Lab).
 
+## Project report and handover
+
+- [Full project report](docs/PROJECT_REPORT.md) ([PDF](docs/PROJECT_REPORT.pdf)): architecture, firmware, code map, lab workflows, use cases, data/cloud behavior, validation, limitations and maintenance.
+- [One-page lab handover](docs/LAB_HANDOVER.md) ([printable PDF](docs/LAB_HANDOVER.pdf)): daily operation, account/data precautions and receiving checklist.
+
 SensorLab is built as a **local-first measurement instrument**. Readings are saved continuously while recording.
 Every stream is keyed by stable device and channel identity. Lost, duplicated and invalid samples are counted
 and shown. Interrupted recordings are detected and can be recovered. Exports contain the full stored session in a
-documented, versioned format. Nothing is sent over the network.
+documented, versioned format. The default build sends nothing over the network.
+An opt-in build supports Google sign-in and automatic Firebase backup when online,
+without changing offline recording. See [optional cloud setup](docs/CLOUD_BACKUP.md).
+**Profile** brings account status, backup status, local recording counts, recent
+recordings and a History shortcut together. The main History button remains available.
 
 The priorities are sampling fidelity, measurement accuracy, explicit data-quality reporting, offline operation,
 and independent simultaneous device streams. Platform support must be qualified against those same requirements;

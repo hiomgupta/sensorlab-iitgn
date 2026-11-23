@@ -7,6 +7,7 @@ test/e2e/results.json
 *.log
 .env
 .env.*
+firebase-config.local.json
 *.pem
 *.key
 # local sensor data exports must not be committed
@@ -31,3 +32,9 @@ test/e2e/bench-results.json
 /docs/evidence/archive/
 /docs/evidence/baseline-*/
 /docs/evidence/readiness/
+
+# Versioned project report and handover; keep local data/config exclusions above.
+!/docs/PROJECT_REPORT.md
+!/docs/PROJECT_REPORT.pdf
+!/docs/LAB_HANDOVER.md
+!/docs/LAB_HANDOVER.pdf

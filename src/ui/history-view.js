@@ -7,6 +7,7 @@ import {
 } from '../export/export.js';
 import { buildZipParts } from '../export/zip.js';
 import { renderHistoryChart } from '../viz/charts.js';
+import { sessionBackupLabel } from './profile-view.js';
 
 const STATE_LABEL = {
     open: 'recording', closed: 'complete', recovered: '⚠ recovered (interrupted)', imported: 'imported', interrupted: '⚠ interrupted – needs recovery',
@@ -19,6 +20,7 @@ export class HistoryView {
         this.app = app;
         this.getActiveSessionId = getActiveSessionId;
         this.onChanged = onChanged || (() => {});
+        this.cloud = null;
         this.dialog = $('historyDialog');
         this.chart = null;
         this.current = null;
@@ -80,9 +82,14 @@ export class HistoryView {
             const actions = h('td', {},
                 isInterrupted ? h('button', { type: 'button', class: 'btn btn-sm', 'aria-label': `Recover session ${label}`, onclick: () => this.recover(s.sessionId) }, 'Recover') : null,
                 h('button', { type: 'button', class: 'btn btn-sm', 'aria-label': `View session ${label}`, onclick: () => this.view(s.sessionId) }, 'View'),
-                s.sessionId === active ? null : h('button', { type: 'button', class: 'btn btn-sm btn-danger', 'aria-label': `Delete session ${label}`, onclick: () => this.remove(s) }, 'Delete'));
+                s.sessionId === active ? null : h('button', { type: 'button', class: 'btn btn-sm btn-danger', 'aria-label': `Delete session ${label}`, onclick: () => this.remove(s) }, 'Delete'),
+                this.cloud && s.state !== 'open' && !s.cloudUploadedAt ? h('button', {
+                    type: 'button', class: 'btn btn-sm', 'aria-label': `Upload session ${label}`,
+                    onclick: () => this.upload(s),
+                }, 'Upload') : null);
             body.append(h('tr', {},
-                h('td', {}, s.name, s.simulated ? h('span', { class: 'badge tag-sim' }, ' SIMULATED') : null),
+                h('td', {}, s.name, s.simulated ? h('span', { class: 'badge tag-sim' }, ' SIMULATED') : null,
+                    this.cloud ? h('small', { class: 'muted' }, ' · ' + sessionBackupLabel(s, this.cloud.getAccount()?.uid)) : null),
                 h('td', {}, s.startedWall ? new Date(s.startedWall).toLocaleString() : '—'),
                 h('td', {}, s.sessionId === active ? 'recording now' : (STATE_LABEL[st] || st)),
                 h('td', { class: 'num' }, String(s.storage?.readingsPersisted ?? '?')),
@@ -103,7 +110,8 @@ export class HistoryView {
     }
 
     async remove(s) {
-        const ok = await confirmAction(`Delete session "${s.name}" (${s.storage?.readingsPersisted ?? '?'} channel readings, started ${s.startedWall ? new Date(s.startedWall).toLocaleString() : '?'})? This cannot be undone. Other sessions with the same name are not affected.`, { okLabel: 'Delete' });
+        const cloudNote = this.cloud ? ' This deletes only the local copy; completed or in-flight cloud backups are not deleted.' : '';
+        const ok = await confirmAction(`Delete session "${s.name}" (${s.storage?.readingsPersisted ?? '?'} channel readings, started ${s.startedWall ? new Date(s.startedWall).toLocaleString() : '?'})? This cannot be undone. Other sessions with the same name are not affected.${cloudNote}`, { okLabel: 'Delete' });
         if (!ok) return;
         try { await this.repo.deleteSession(s.sessionId); toast('Session deleted.'); log('session', `deleted ${s.sessionId}`); }
         catch (e) { toast('Delete failed: ' + e.message, 'error'); }
@@ -113,12 +121,29 @@ export class HistoryView {
 
     async wipeAll() {
         if (this.getActiveSessionId()) { toast('Stop the current recording first.', 'warning'); return; }
-        const ok = await confirmAction('Delete ALL recorded sessions stored in this browser profile? Export anything you need first. This cannot be undone.', { typed: true, okLabel: 'Delete all' });
+        const cloudNote = this.cloud ? ' Cloud copies and your remembered account are not deleted. Sign out separately on shared computers.' : '';
+        const ok = await confirmAction('Delete ALL recorded sessions stored in this browser profile? Export anything you need first. This cannot be undone.' + cloudNote, { typed: true, okLabel: 'Delete all' });
         if (!ok) return;
         try { await this.repo.wipeAll(); toast('All sessions deleted.'); log('session', 'wiped all sessions'); }
         catch (e) { toast('Wipe failed: ' + e.message, 'error'); }
         await this.showList();
         this.onChanged();
+    }
+
+    async upload(s) {
+        const account = this.cloud.getAccount();
+        if (!account) { toast('Sign in using Profile first, then select the recording to upload.', 'warning'); return; }
+        if (s.cloudOwnerUid && s.cloudOwnerUid !== account.uid) {
+            toast('Sign in to the account that owns this recording. It cannot be uploaded to a different account.', 'warning');
+            return;
+        }
+        const ok = await confirmAction(`Back up "${s.name}", including all stored readings and annotations, to ${account.email || account.displayName || 'your signed-in account'}? It remains stored locally. If offline, it will upload when this same account is authenticated online.`, { okLabel: 'Queue upload' });
+        if (!ok) return;
+        try {
+            await this.cloud.queueSession(s.sessionId, account.uid);
+            toast('Cloud backup queued. Local recording is unchanged.');
+            await this.showList();
+        } catch (e) { toast('Could not queue upload: ' + e.message, 'error'); log('error', 'cloud queue: ' + e.message); }
     }
 
     async view(id) {

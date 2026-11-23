@@ -4,6 +4,9 @@
   "private": true,
   "description": "Offline-first, Bluetooth-only laboratory sensor acquisition (Web Bluetooth).",
   "type": "module",
+  "dependencies": {
+    "firebase": "13.4.0"
+  },
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test \"test/unit/**/*.test.js\"",
