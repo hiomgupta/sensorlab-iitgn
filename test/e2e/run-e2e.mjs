@@ -16,7 +16,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseCsv, CSV_COLUMNS } from '../../src/export/export.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const dist = path.join(root, 'dist');
+const dist = process.env.SL_E2E_DIST ? path.resolve(process.env.SL_E2E_DIST) : path.join(root, 'dist');
 if (!existsSync(path.join(dist, 'index.html'))) { console.error('dist/ missing: run npm run build'); process.exit(2); }
 const CHROME = process.env.CHROME_PATH || ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', '/usr/bin/google-chrome', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'].find(p => existsSync(p));
 if (!CHROME) { console.error('NOT RUN: no Chrome/Edge found (set CHROME_PATH)'); process.exit(2); }

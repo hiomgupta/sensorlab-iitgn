@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased - 2026-11-24: optional cloud backup
+
+### Added
+- A compact Profile hub with persistent account status, backup state, local recording summaries, and recent-history navigation; the main History shortcut is retained.
+- Opt-in Firebase builds with Google sign-in, profile storage and automatic backup of completed sessions, readings and annotations after reconnect.
+- Durable account ownership for offline recordings, explicit selection of unassigned recordings, owner-only Firestore rules and idempotent upload retries.
+- Cloud setup documentation, bounded UTF-8 document payloads, and tests for offline operation, account changes, failed requests and reload recovery.
+- The default build remains strictly offline-only; cloud sign-in requires HTTPS or secure localhost hosting.
+
 ## Unreleased - 2026-11-14: acquisition correctness and platform qualification
 
 ### Fixed

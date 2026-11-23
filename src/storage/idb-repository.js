@@ -94,8 +94,13 @@ export class IdbRepository {
     }
 
     async createSession(session) {
-        return this._run('createSession', ['sessions'], 'readwrite', async (tx) => {
-            await req(tx.objectStore('sessions').add({ schema: SESSION_SCHEMA, ...session }));
+        return this._run('createSession', ['sessions', 'meta'], 'readwrite', async (tx) => {
+            const account = (await req(tx.objectStore('meta').get('cloud-account')))?.value;
+            const { cloudOwnerUid, cloudUploadedAt, ...local } = session;
+            await req(tx.objectStore('sessions').add({
+                schema: SESSION_SCHEMA, ...local,
+                ...(account?.uid ? { cloudOwnerUid: account.uid, cloudUploadedAt: null } : {}),
+            }));
         });
     }
 
@@ -103,7 +108,8 @@ export class IdbRepository {
     async importSnapshot(snapshot) {
         return this._run('importSnapshot', ['sessions', 'chunks', 'annotations'], 'readwrite', async (tx) => {
             const sessionId = snapshot.session.sessionId;
-            await req(tx.objectStore('sessions').add({ schema: SESSION_SCHEMA, ...snapshot.session }));
+            const { cloudOwnerUid, cloudUploadedAt, ...local } = snapshot.session;
+            await req(tx.objectStore('sessions').add({ schema: SESSION_SCHEMA, ...local }));
             for (const chunk of snapshot.chunks) {
                 const invalid = validateChunk(chunk);
                 if (invalid) throw new StorageError('importSnapshot', { name: 'DataError', message: `invalid chunk ${chunk.chunkNo}: ${invalid}` });
@@ -232,6 +238,29 @@ export class IdbRepository {
 
     async setMeta(key, value) {
         return this._run('setMeta', ['meta'], 'readwrite', async (tx) => { await req(tx.objectStore('meta').put({ key, value })); });
+    }
+
+    async assignCloudOwner(sessionId, uid) {
+        return this._run('assignCloudOwner', ['sessions', 'meta'], 'readwrite', async (tx) => {
+            const account = (await req(tx.objectStore('meta').get('cloud-account')))?.value;
+            if (!uid || account?.uid !== uid) throw new Error('Sign in to the intended cloud account first.');
+            const store = tx.objectStore('sessions');
+            const session = await req(store.get(sessionId));
+            if (!session) throw new Error('Session not found.');
+            if (session.state === 'open') throw new Error('Stop or recover the recording before uploading.');
+            if (session.cloudOwnerUid && session.cloudOwnerUid !== uid) throw new Error('This recording belongs to another account and cannot be reassigned.');
+            await req(store.put({ ...session, cloudOwnerUid: uid, cloudUploadedAt: session.cloudUploadedAt ?? null }));
+        });
+    }
+
+    async markCloudUploaded(sessionId, uid, wall) {
+        return this._run('markCloudUploaded', ['sessions'], 'readwrite', async (tx) => {
+            const store = tx.objectStore('sessions');
+            const session = await req(store.get(sessionId));
+            if (!session) throw new Error('The local session was deleted during upload.');
+            if (session.cloudOwnerUid !== uid || session.state === 'open') throw new Error('The session is no longer eligible for this upload.');
+            await req(store.put({ ...session, cloudUploadedAt: wall }));
+        });
     }
 }
 

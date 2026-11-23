@@ -1,0 +1,6 @@
+{
+  "apiKey": "fake-public-web-key-for-offline-tests",
+  "authDomain": "sensorlab-cloud-test.firebaseapp.com",
+  "projectId": "sensorlab-cloud-test",
+  "appId": "1:123456:web:abcdef"
+}
